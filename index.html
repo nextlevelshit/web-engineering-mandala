@@ -1,8 +1,7 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Web Engineering Mandala</title>
   <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <style>
@@ -44,7 +43,6 @@
 
       .sector:hover {
           filter: brightness(1.2);
-          /*stroke: rgba(255, 255, 255, 0.8);*/
           stroke-width: 3;
       }
 
@@ -95,9 +93,7 @@
       .cluster-background {
           font-size: 36px;
           fill: none;
-          /*stroke: rgba(255, 255, 255, 1);*/
           stroke-width: 2;
-          /*stroke-dasharray: 8,5;*/
       }
 
       .cluster-label {
@@ -114,7 +110,7 @@
           stroke-width: 6;
           fill: none;
           opacity: 0.7;
-          stroke-dasharray: 5,5;
+          stroke-dasharray: 5, 5;
           animation: dash 1s linear infinite;
           animation-direction: reverse;
       }
@@ -175,6 +171,24 @@
           margin: 2px 0;
       }
 
+      #tooltip .example-link {
+          margin-top: 12px;
+          padding: 6px 12px;
+          background: rgba(99, 179, 237, 0.2);
+          border: 1px solid rgba(99, 179, 237, 0.4);
+          border-radius: 4px;
+          color: #63b3ed;
+          font-size: 12px;
+          cursor: pointer;
+          display: inline-block;
+          transition: all 0.2s ease;
+      }
+
+      #tooltip .example-link:hover {
+          background: rgba(99, 179, 237, 0.3);
+          border-color: rgba(99, 179, 237, 0.6);
+      }
+
       .controls {
           position: absolute;
           top: 20px;
@@ -201,37 +215,6 @@
           border-color: #63b3ed;
       }
 
-      .legend {
-          position: absolute;
-          bottom: 20px;
-          right: 20px;
-          background: rgba(26, 32, 44, 0.8);
-          border: 1px solid #4a5568;
-          border-radius: 8px;
-          padding: 15px;
-          backdrop-filter: blur(8px);
-      }
-
-      .legend h4 {
-          margin: 0 0 10px 0;
-          color: #63b3ed;
-          font-size: 14px;
-      }
-
-      .legend-item {
-          display: flex;
-          align-items: center;
-          margin: 5px 0;
-          font-size: 12px;
-      }
-
-      .legend-color {
-          width: 16px;
-          height: 16px;
-          border-radius: 3px;
-          margin-right: 8px;
-      }
-
       .sector-background-label {
           font-size: 120px;
           font-weight: 900;
@@ -247,12 +230,163 @@
           font-weight: 400;
           text-anchor: middle;
           fill: rgba(255, 255, 255, 0.9);
-          /*text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);*/
           pointer-events: none;
       }
 
       .file-extension-small {
           font-size: 12px;
+      }
+
+      /* Example Dialog Styles */
+      #example-dialog {
+          background: rgba(15, 15, 35, 0.95);
+          border: 2px solid #4a5568;
+          border-radius: 12px;
+          max-width: 80vw;
+          width: 60rem;
+          max-height: 80vh;
+          padding: 0;
+          margin: auto;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          color: #e2e8f0;
+      }
+
+      #example-dialog::backdrop {
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(4px);
+      }
+
+      .dialog-header {
+          background: rgba(26, 32, 44, 0.8);
+          padding: 20px 24px;
+          border-bottom: 1px solid #4a5568;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+
+      .dialog-title {
+          color: #63b3ed;
+          font-size: 24px;
+          font-weight: 700;
+          margin: 0;
+      }
+
+      .dialog-close {
+          background: transparent;
+          border: none;
+          color: #a0aec0;
+          font-size: 24px;
+          cursor: pointer;
+          padding: 4px;
+          line-height: 1;
+      }
+
+      .dialog-close:hover {
+          color: #e2e8f0;
+      }
+
+      .dialog-content {
+          padding: 24px;
+          overflow-y: auto;
+          max-height: calc(80vh - 120px);
+      }
+
+      .difficulty-badge {
+          display: inline-block;
+          padding: 4px 12px;
+          border-radius: 16px;
+          font-size: 12px;
+          font-weight: 600;
+          text-transform: uppercase;
+          margin-bottom: 16px;
+      }
+
+      .difficulty-0 {
+          background: #065f46;
+          color: #10b981;
+      }
+
+      .difficulty-1 {
+          background: #1e40af;
+          color: #60a5fa;
+      }
+
+      .difficulty-2 {
+          background: #7c2d12;
+          color: #fb923c;
+      }
+
+      .difficulty-3 {
+          background: #7c2d12;
+          color: #f87171;
+      }
+
+      .section {
+          margin-bottom: 24px;
+      }
+
+      .section h3 {
+          color: #e2e8f0;
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 12px;
+          border-bottom: 1px solid #374151;
+          padding-bottom: 8px;
+      }
+
+      .tech-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 16px;
+      }
+
+      .tech-tag {
+          background: rgba(99, 179, 237, 0.1);
+          color: #63b3ed;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          border: 1px solid rgba(99, 179, 237, 0.3);
+      }
+
+      .code-block {
+          background: #1a202c;
+          border: 1px solid #4a5568;
+          border-radius: 8px;
+          padding: 16px;
+          font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+          font-size: 13px;
+          line-height: 1.4;
+          overflow-x: auto;
+          white-space: pre;
+          color: #e2e8f0;
+      }
+
+      .file-tree {
+          background: #1a202c;
+          border: 1px solid #4a5568;
+          border-radius: 8px;
+          padding: 16px;
+          font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+          font-size: 13px;
+          line-height: 1.6;
+          color: #a0aec0;
+      }
+
+      .file-tree .folder {
+          color: #fbbf24;
+      }
+
+      .file-tree .file {
+          color: #e2e8f0;
+      }
+
+      .file-tree .generated {
+          color: #6b7280;
+          font-style: italic;
       }
   </style>
 </head>
@@ -260,7 +394,6 @@
 <div id="container">
   <div class="controls">
     <button class="control-btn" id="reset-zoom">Reset View</button>
-    <button class="control-btn" id="toggle-labels">Toggle Labels</button>
     <button class="control-btn" id="clear-selection">Clear Selection</button>
   </div>
 
@@ -268,21 +401,15 @@
 
   <div id="tooltip"></div>
 
-  <div class="legend">
-    <h4>Skill Areas</h4>
-    <div class="legend-item">
-      <div class="legend-color" style="background: #1572b6;"></div>
-      <span>HTML</span>
+  <dialog id="example-dialog">
+    <div class="dialog-header">
+      <h2 class="dialog-title" id="dialog-title">Example Details</h2>
+      <button class="dialog-close" id="dialog-close">&times;</button>
     </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background: #f7df1e;"></div>
-      <span>CSS</span>
+    <div class="dialog-content" id="dialog-content">
+      <!-- Content will be populated by JavaScript -->
     </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background: #e34f26;"></div>
-      <span>JavaScript</span>
-    </div>
-  </div>
+  </dialog>
 </div>
 
 <script>
@@ -293,7 +420,7 @@
     centerX: window.innerWidth / 2,
     centerY: window.innerHeight / 2,
     coreRadius: 120,
-    ringWidth: 200, // Tripled from 100 to 300
+    ringWidth: 200,
     ringGap: 120,
     techNodeRadius: 15,
     sectorColors: {
@@ -325,8 +452,11 @@
 
   svg.call(zoom);
 
-  // Tooltip
+  // Tooltip and Dialog
   const tooltip = d3.select('#tooltip');
+  const dialog = document.getElementById('example-dialog');
+  const dialogTitle = document.getElementById('dialog-title');
+  const dialogContent = document.getElementById('dialog-content');
 
   // Store all technologies for easy lookup
   let allTechnologies = new Map();
@@ -381,6 +511,63 @@
 
     if (currentLine) lines.push(currentLine);
     return lines;
+  }
+
+  // Find example for technology
+  function findExampleForTech(techName) {
+    return examples.find(example =>
+      example.technologies.includes(techName)
+    );
+  }
+
+  function techHasExample(techName) {
+    return examples.some(example =>
+      example.technologies.includes(techName)
+    );
+  }
+
+  // Dialog functions
+  function showExampleDialog(tech) {
+    const example = findExampleForTech(tech.name);
+    if (!example) return;
+
+    dialogTitle.textContent = example.name;
+
+    const difficultyLevels = ['Foundation', 'Core', 'Build', 'Application'];
+    const difficultyColors = ['difficulty-0', 'difficulty-1', 'difficulty-2', 'difficulty-3'];
+
+    dialogContent.innerHTML = `
+      <div class="difficulty-badge ${difficultyColors[example.level]}">
+        Level ${example.level}: ${difficultyLevels[example.level]}
+      </div>
+
+      <div class="section">
+        <h3>Technologies Used</h3>
+        <div class="tech-list">
+          ${example.technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Package.json</h3>
+        <div class="code-block">${JSON.stringify(example.package, null, 2)}</div>
+      </div>
+
+      <div class="section">
+        <h3>Project Structure</h3>
+        <pre class="code-block">${example.fileTree.join("\n")}</pre>
+      </div>
+    `;
+
+    dialog.showModal();
+  }
+
+  function formatFileTree(fileTree) {
+    return fileTree.join('\n\r');
+  }
+
+  function closeDialog() {
+    dialog.close();
   }
 
   // Data processing function
@@ -533,10 +720,10 @@
       .attr('cy', config.centerY)
       .attr('r', config.coreRadius)
       .attr('class', 'core-element')
-      .on('click', function(event) {
+      .on('click', function (event) {
         selectTechnology(coreData.technologies[0]);
       })
-      .on('mouseover', function(event) {
+      .on('mouseover', function (event) {
         showTooltip(event, coreData.technologies[0]);
       })
       .on('mouseout', hideTooltip);
@@ -587,14 +774,6 @@
   function renderSector(parent, sector, ring) {
     const sectorGroup = parent.append('g').attr('class', `sector-group sector-${(sector.name || 'unknown').toLowerCase()}`);
 
-    // Add large background sector label (rendered first)
-    const labelPos = getLabelPosition((ring.innerRadius + ring.outerRadius) / 2, sector.midAngle);
-    if (false) sectorGroup.append('text')
-      .attr('x', labelPos.x)
-      .attr('y', labelPos.y + 25) // Offset for better centering
-      .attr('class', 'sector-background-label')
-      .text(sector.name.toUpperCase());
-
     // Sector arc
     const arcPath = getArcPath(ring.innerRadius, ring.outerRadius, sector.startAngle, sector.endAngle);
 
@@ -605,11 +784,11 @@
       .attr('stroke', sector.color)
       .attr('fill-opacity', 0.5)
       .attr('class', 'sector')
-      .on('mouseover', function(event) {
-        d3.select(this).attr('fill-opacity', 0.3).str;
+      .on('mouseover', function (event) {
+        d3.select(this).attr('fill-opacity', 0.3);
       })
-      .on('mouseout', function(event) {
-        d3.select(this).attr('fill-opacity', 0.5).str;
+      .on('mouseout', function (event) {
+        d3.select(this).attr('fill-opacity', 0.5);
       });
 
     // Render clusters
@@ -662,21 +841,21 @@
     const node = techGroup.append('circle')
       .attr('cx', tech.position.x)
       .attr('cy', tech.position.y)
-      .attr('r', config.techNodeRadius)
+      .attr('r', techHasExample(tech.name) ? config.techNodeRadius * 1.5 : config.techNodeRadius)
       .attr('fill', sector.color)
       .attr('stroke', '#fff')
-      .attr('stroke-width', 2)
+      .attr('stroke-width', 4)
       .attr('class', 'technology-node')
       .attr('data-tech-id', tech.name)
-      .on('click', function(event) {
-        event.stopPropagation();
+      .on('click', function (event) {
         selectTechnology(tech);
+        showExampleDialog(tech);
       })
-      .on('mouseover', function(event) {
+      .on('mouseover', function (event) {
         d3.select(this).attr('r', config.techNodeRadius * 1.1);
         showTooltip(event, tech);
       })
-      .on('mouseout', function(event) {
+      .on('mouseout', function (event) {
         d3.select(this).attr('r', config.techNodeRadius);
         hideTooltip();
       });
@@ -764,10 +943,10 @@
     }
 
     // Show related technologies
-/*    const related = techRelationships[data.name];
-    if (related && related.length > 0) {
-      content += `<p><strong>Builds to:</strong> ${related.join(', ')}</p>`;
-    }*/
+    /*    const related = techRelationships[data.name];
+        if (related && related.length > 0) {
+          content += `<p><strong>Builds to:</strong> ${related.join(', ')}</p>`;
+        }*/
 
     tooltip
       .style('opacity', 1)
@@ -799,7 +978,7 @@
   d3.select('#clear-selection').on('click', clearSelection);
 
   // Click outside to clear selection
-  svg.on('click', function(event) {
+  svg.on('click', function (event) {
     if (event.target === this) {
       clearSelection();
     }
@@ -832,34 +1011,34 @@
 
   // Technology relationships for path creation
   const techRelationships = {
-  // Core to Build Tools
-  'package.json': ['HTML5', 'CSS3', 'JavaScript'],
-  'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
-  'CSS3': ['Sass', 'PostCSS'],
-  'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
-  'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
-  'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
-  'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
+    // Core to Build Tools
+    'package.json': ['HTML5', 'CSS3', 'JavaScript'],
+    'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
+    'CSS3': ['Sass', 'PostCSS'],
+    'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
+    'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
+    'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
+    'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
 
-  // Build Tools to Application Layer
-  // 'Pug': ['Astro'],
-  // 'Handlebars': ['11ty'],
-  // 'EJS': ['Express'],
-  // 'Sass': ['Flowbite'],
-  'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
-  'Parcel': ['React', 'Vue', 'Svelte'],
-  'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
-  // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
-  'Deno': ['Hono'],
-  'Bun': ['Hono'],
+    // Build Tools to Application Layer
+    // 'Pug': ['Astro'],
+    // 'Handlebars': ['11ty'],
+    // 'EJS': ['Express'],
+    // 'Sass': ['Flowbite'],
+    'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
+    'Parcel': ['React', 'Vue', 'Svelte'],
+    'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
+    // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
+    'Deno': ['Hono'],
+    'Bun': ['Hono'],
 
-  // Application Layer connections (same level)
-  'React': ['Next.js'],
-  'Vue': ['Nuxt'],
-  'SvelteKit': ['Svelte'],
-  'Tailwind': ['Flowbite'],
-  'Express': ['Pug', 'Handlebars', 'EJS']
-};
+    // Application Layer connections (same level)
+    'React': ['Next.js'],
+    'Vue': ['Nuxt'],
+    'SvelteKit': ['Svelte'],
+    'Tailwind': ['Flowbite'],
+    'Express': ['Pug', 'Handlebars', 'EJS']
+  };
 
   // Cleaned data with shorter names and proper structure
   const webEngineeringSkillTree = {
@@ -997,31 +1176,35 @@
           {
             name: "CSS",
             clusters: [
-              { name: "Post Processors", technologies: [
-                {
-                  name: "PostCSS",
-                  description: "Post-processing CSS with JavaScript plugins",
-                  capabilities: [
-                    "Autoprefixer for vendor prefix management",
-                    "CSS Modules for scoped styling",
-                    "Future CSS syntax via polyfills",
-                    "Custom transformations via plugins"
-                  ]
-                }
-              ] },
-              { name: "Pre Processors", technologies: [
-                {
-                  name: "Sass",
-                  extensions: [".scss", ".sass"],
-                  description: "Industry standard CSS preprocessor",
-                  capabilities: [
-                    "Variables and functions for DRY code",
-                    "Nested selectors for better organization",
-                    "Mixins for reusable style patterns",
-                    "Mathematical operations and color functions"
-                  ]
-                }
-              ] },
+              {
+                name: "Post Processors", technologies: [
+                  {
+                    name: "PostCSS",
+                    description: "Post-processing CSS with JavaScript plugins",
+                    capabilities: [
+                      "Autoprefixer for vendor prefix management",
+                      "CSS Modules for scoped styling",
+                      "Future CSS syntax via polyfills",
+                      "Custom transformations via plugins"
+                    ]
+                  }
+                ]
+              },
+              {
+                name: "Pre Processors", technologies: [
+                  {
+                    name: "Sass",
+                    extensions: [".scss", ".sass"],
+                    description: "Industry standard CSS preprocessor",
+                    capabilities: [
+                      "Variables and functions for DRY code",
+                      "Nested selectors for better organization",
+                      "Mixins for reusable style patterns",
+                      "Mathematical operations and color functions"
+                    ]
+                  }
+                ]
+              },
             ]
           },
           {
@@ -1335,17 +1518,17 @@
                       "Zero-config deployment ready"
                     ]
                   },
-/*                  {
-                    name: "11ty",
-                    extensions: [".md"],
-                    description: "Simple, flexible static site generator",
-                    capabilities: [
-                      "Multiple template languages support",
-                      "Data-driven site generation from any source",
-                      "Extensible plugin ecosystem",
-                      "Zero-config deployment ready"
-                    ]
-                  },*/
+                  /*                  {
+                                      name: "11ty",
+                                      extensions: [".md"],
+                                      description: "Simple, flexible static site generator",
+                                      capabilities: [
+                                        "Multiple template languages support",
+                                        "Data-driven site generation from any source",
+                                        "Extensible plugin ecosystem",
+                                        "Zero-config deployment ready"
+                                      ]
+                                    },*/
                   {
                     name: "Next.js",
                     description: "React-based full-stack framework",
@@ -1372,20 +1555,20 @@
           }
         ]
       },
-/*      {
-        name: "test",
-        level: 4,
-        sectors: [
-          {
-            name: "HTML",
-            technologies: [
-              {
-                name: "test"
-              }
-            ]
-          }
-        ]
-      }*/
+      /*      {
+              name: "test",
+              level: 4,
+              sectors: [
+                {
+                  name: "HTML",
+                  technologies: [
+                    {
+                      name: "test"
+                    }
+                  ]
+                }
+              ]
+            }*/
     ]
   };
 
