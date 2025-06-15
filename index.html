@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web Engineering Skill Tree</title>
+  <title>Web Engineering Mandala</title>
   <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <style>
       * {
@@ -739,10 +739,10 @@
     }
 
     // Show related technologies
-    const related = techRelationships[data.name];
+/*    const related = techRelationships[data.name];
     if (related && related.length > 0) {
       content += `<p><strong>Builds to:</strong> ${related.join(', ')}</p>`;
-    }
+    }*/
 
     tooltip
       .style('opacity', 1)
@@ -808,9 +808,9 @@
 
 
     // Cleaned data with shorter names and proper structure
-    const webEngineeringSkillTree = {
+  const webEngineeringSkillTree = {
     metadata: {
-      title: "Web Engineering Skill Tree",
+      title: "Web Engineering Mandala",
       description: "RPG-style progression through web development complexity layers",
       version: "1.0.0"
     },
@@ -834,7 +834,7 @@
     rings: [
       {
         level: 1,
-        name: "Core Technologies",
+        name: "Core Layer",
         description: "The fundamental building blocks of the web",
         sectors: [
           {
@@ -877,6 +877,7 @@
                 technologies: [
                   {
                     name: "Browser APIs",
+                    extensions: [".js"],
                     description: "Native browser capabilities beyond basic DOM",
                     capabilities: [
                       "Geolocation, Local Storage, Service Workers",
@@ -887,6 +888,7 @@
                   },
                   {
                     name: "node:fetch",
+                    extensions: [".js", ".mjs"],
                     description: "Built-in Node.js HTTP client",
                     capabilities: [
                       "Server-side HTTP requests without dependencies",
@@ -896,6 +898,7 @@
                   },
                   {
                     name: "node:fs",
+                    extensions: [".js", ".mjs"],
                     description: "File system operations module",
                     capabilities: [
                       "Read/write files synchronously or asynchronously",
@@ -913,25 +916,7 @@
                       "DOM manipulation and event handling",
                       "Fetch API for network requests"
                     ]
-                  },
-/*                  {
-                    name: "import.meta.*",
-                    description: "Module metadata and environment access",
-                    capabilities: [
-                      "Current module URL and file path resolution",
-                      "Environment detection in ESM modules",
-                      "Dynamic import capabilities"
-                    ]
-                  },
-                  {
-                    name: "process.*",
-                    description: "Node.js process information and control",
-                    capabilities: [
-                      "Environment variables access",
-                      "Command line arguments parsing",
-                      "Process lifecycle management"
-                    ]
-                  }*/
+                  }
                 ]
               }
             ]
@@ -941,7 +926,7 @@
 
       {
         level: 2,
-        name: "Build Tools",
+        name: "Build Layer",
         description: "Tools that process, optimize, and enhance core web technologies",
         sectors: [
           {
@@ -998,6 +983,7 @@
               },
               {
                 name: "PostCSS",
+                extensions: [".css"],
                 description: "Post-processing CSS with JavaScript plugins",
                 capabilities: [
                   "Autoprefixer for vendor prefix management",
@@ -1016,6 +1002,7 @@
                 technologies: [
                   {
                     name: "Parcel",
+                    extensions: [".js", ".json"],
                     description: "Zero-configuration build tool",
                     capabilities: [
                       "Automatic dependency resolution",
@@ -1026,6 +1013,7 @@
                   },
                   {
                     name: "Vite",
+                    extensions: [".config.js", ".config.ts"],
                     description: "Lightning-fast dev server with ESM",
                     capabilities: [
                       "Instant server start with native ESM",
@@ -1036,6 +1024,7 @@
                   },
                   {
                     name: "Webpack",
+                    extensions: [".config.js"],
                     description: "Highly configurable module bundler",
                     capabilities: [
                       "Advanced code splitting strategies",
@@ -1046,6 +1035,7 @@
                   },
                   {
                     name: "SvelteKit",
+                    extensions: [".svelte", ".js", ".ts"],
                     description: "Svelte-powered full-stack framework",
                     capabilities: [
                       "File-based routing system",
@@ -1055,14 +1045,14 @@
                     ]
                   },
                   {
-                    name: "tsc",
-                    description: "TypeScript compiler",
+                    name: "TypeScript",
                     extensions: [".ts", ".tsx"],
+                    description: "Typed superset of JavaScript for large applications",
                     capabilities: [
-                      "Type checking and compilation to JavaScript",
-                      "Declaration file generation",
-                      "Project references for monorepos",
-                      "Watch mode for development"
+                      "Static type checking and IntelliSense",
+                      "Modern JavaScript features compilation",
+                      "Interface definitions for APIs",
+                      "Enhanced refactoring and debugging"
                     ]
                   }
                 ]
@@ -1072,6 +1062,7 @@
                 technologies: [
                   {
                     name: "Deno",
+                    extensions: [".ts", ".js"],
                     description: "Secure TypeScript runtime",
                     capabilities: [
                       "Built-in TypeScript support without compilation",
@@ -1082,6 +1073,7 @@
                   },
                   {
                     name: "Bun",
+                    extensions: [".js", ".ts"],
                     description: "Fast all-in-one JavaScript runtime",
                     capabilities: [
                       "Extremely fast package installation",
@@ -1105,8 +1097,28 @@
           {
             name: "HTML",
             technologies: [
-              { name: "Web Components" },
-              { name: "Web Assembly (WASM)" }
+              {
+                name: "Web Components",
+                extensions: [".js", ".ts"],
+                description: "Reusable custom elements with encapsulated functionality",
+                capabilities: [
+                  "Shadow DOM for style encapsulation",
+                  "Custom element registration and lifecycle",
+                  "HTML templates and slots",
+                  "Framework-agnostic component architecture"
+                ]
+              },
+              {
+                name: "WebAssembly",
+                extensions: [".wasm"],
+                description: "Binary instruction format for high-performance web applications",
+                capabilities: [
+                  "Near-native performance in browsers",
+                  "Support for multiple programming languages",
+                  "Secure sandboxed execution environment",
+                  "Interoperability with JavaScript"
+                ]
+              }
             ]
           },
           {
@@ -1114,6 +1126,7 @@
             technologies: [
               {
                 name: "Tailwind",
+                extensions: [".css"],
                 description: "Utility-first CSS framework",
                 capabilities: [
                   "Rapid prototyping with utility classes",
@@ -1122,11 +1135,31 @@
                   "Component extraction patterns"
                 ]
               },
-              { name: "Bootstrap" },
-              { name: "ShadCN" },
-              { name: "Material Design Lite" },
+              {
+                name: "Bootstrap",
+                extensions: [".css", ".scss"],
+                description: "Popular CSS framework with pre-built components",
+                capabilities: [
+                  "Responsive grid system and utilities",
+                  "Pre-styled UI components",
+                  "JavaScript plugins for interactions",
+                  "Customizable Sass variables and mixins"
+                ]
+              },
+              {
+                name: "ShadCN",
+                extensions: [".tsx", ".jsx"],
+                description: "Re-usable components built with Radix UI and Tailwind",
+                capabilities: [
+                  "Copy-paste component architecture",
+                  "Accessibility-first design patterns",
+                  "Customizable design system tokens",
+                  "TypeScript support with proper typing"
+                ]
+              },
               {
                 name: "Flowbite",
+                extensions: [".css", ".js"],
                 description: "Tailwind CSS component library",
                 capabilities: [
                   "Pre-built components with Tailwind classes",
@@ -1167,7 +1200,7 @@
                   },
                   {
                     name: "Angular",
-                    extensions: [".ts"],
+                    extensions: [".ts", ".html"],
                     description: "Full-featured framework with TypeScript",
                     capabilities: [
                       "Dependency injection system",
@@ -1194,6 +1227,7 @@
                 technologies: [
                   {
                     name: "Express",
+                    extensions: [".js", ".ts"],
                     description: "Minimal web framework for Node.js",
                     capabilities: [
                       "Middleware-based request processing",
@@ -1204,6 +1238,7 @@
                   },
                   {
                     name: "Koa",
+                    extensions: [".js", ".ts"],
                     description: "Next-generation web framework by Express team",
                     capabilities: [
                       "Async/await by default",
@@ -1214,6 +1249,7 @@
                   },
                   {
                     name: "Fastify",
+                    extensions: [".js", ".ts"],
                     description: "Fast and low overhead web framework",
                     capabilities: [
                       "JSON schema validation built-in",
@@ -1224,6 +1260,7 @@
                   },
                   {
                     name: "Hono",
+                    extensions: [".js", ".ts"],
                     description: "Ultrafast web framework for edge environments",
                     capabilities: [
                       "Edge runtime compatibility (Cloudflare Workers, Deno)",
@@ -1239,6 +1276,7 @@
                 technologies: [
                   {
                     name: "Astro",
+                    extensions: [".astro", ".md", ".mdx"],
                     description: "Multi-framework static site generator",
                     capabilities: [
                       "Build-time content generation with any framework",
@@ -1249,6 +1287,7 @@
                   },
                   {
                     name: "11ty",
+                    extensions: [".11ty.js", ".md"],
                     description: "Simple, flexible static site generator",
                     capabilities: [
                       "Multiple template languages support",
@@ -1259,6 +1298,7 @@
                   },
                   {
                     name: "Next.js",
+                    extensions: [".js", ".jsx", ".ts", ".tsx"],
                     description: "React-based full-stack framework",
                     capabilities: [
                       "Server-side rendering and static generation",
@@ -1269,6 +1309,7 @@
                   },
                   {
                     name: "Nuxt",
+                    extensions: [".vue", ".js", ".ts"],
                     description: "Vue.js-based full-stack framework",
                     capabilities: [
                       "Universal rendering with Vue.js",
