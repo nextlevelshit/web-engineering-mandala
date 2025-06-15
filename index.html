@@ -425,7 +425,7 @@
     techNodeRadius: 15,
     sectorColors: {
       HTML: '#1572b6',
-      CSS: '#f7df1e',
+      CSS: '#21fa11',
       JavaScript: '#e34f26',
       Foundation: '#2d3748'
     },
@@ -841,10 +841,11 @@
     const node = techGroup.append('circle')
       .attr('cx', tech.position.x)
       .attr('cy', tech.position.y)
-      .attr('r', techHasExample(tech.name) ? config.techNodeRadius * 1.5 : config.techNodeRadius)
+      .attr('r', config.techNodeRadius)
       .attr('fill', sector.color)
+      .attr('stroke-opacity', techHasExample(tech.name) ? 1 : 0.5)
       .attr('stroke', '#fff')
-      .attr('stroke-width', 4)
+      .attr('stroke-width', techHasExample(tech.name) ? 4 : 4)
       .attr('class', 'technology-node')
       .attr('data-tech-id', tech.name)
       .on('click', function (event) {
@@ -1573,6 +1574,300 @@
   };
 
   const examples = [
+    // Add these to the examples array:
+
+    {
+      "id": "node-http-server",
+      "level": 3,
+      "name": "Pure Node.js HTTP Server",
+      "technologies": ["node:http", "node:fs"],
+      "package": {
+        "name": "conference-node",
+        "version": "1.0.0",
+        "type": "module",
+        "scripts": {
+          "dev": "node --watch server.js",
+          "start": "node server.js",
+          "deploy": "pm2 start server.js --name conference-server"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "server.js",
+        "public/",
+        "  index.html",
+        "  speakers.html",
+        "  schedule.html",
+        "  style.css",
+        "  script.js",
+        "data/",
+        "  speakers.json",
+        "  schedule.json"
+      ]
+    },
+
+    {
+      "id": "astro-ssg",
+      "level": 3,
+      "name": "Astro Multi-Framework SSG",
+      "technologies": ["Astro", "React", "Vue", "Tailwind"],
+      "package": {
+        "name": "conference-astro",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "astro dev --port 8000",
+          "build": "astro build",
+          "preview": "astro preview --port 8000",
+          "deploy": "npm run build && npx surge dist conference-astro.surge.sh",
+          "deploy:vercel": "npm run build && npx vercel --prod"
+        },
+        "dependencies": {
+          "astro": "^4.5.0",
+          "@astrojs/react": "^3.1.0",
+          "@astrojs/vue": "^4.0.0",
+          "@astrojs/tailwind": "^5.1.0",
+          "react": "^18.2.0",
+          "vue": "^3.4.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "astro.config.mjs",
+        "tailwind.config.mjs",
+        "src/",
+        "  pages/",
+        "    index.astro",
+        "    speakers.astro",
+        "    schedule.astro",
+        "  layouts/",
+        "    Layout.astro",
+        "  components/",
+        "    Navigation.astro",
+        "    SpeakerCard.jsx",  // React island
+        "    ScheduleFilter.vue", // Vue island
+        "  content/",
+        "    speakers/",
+        "      john-doe.md",
+        "      jane-smith.md",
+        "  data/",
+        "    config.json",
+        "  styles/",
+        "    global.css",
+        "dist/",
+        "  (generated)"
+      ]
+    },
+
+    {
+      "id": "vue-spa",
+      "level": 3,
+      "name": "Vue 3 SPA",
+      "technologies": ["Vue", "Vite", "Tailwind"],
+      "package": {
+        "name": "conference-vue",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "vite --port 8000",
+          "build": "vite build",
+          "preview": "vite preview --port 8000",
+          "deploy": "npm run build && npx surge dist conference-vue.surge.sh"
+        },
+        "dependencies": {
+          "vue": "^3.4.0",
+          "vue-router": "^4.3.0"
+        },
+        "devDependencies": {
+          "vite": "^5.2.0",
+          "@vitejs/plugin-vue": "^5.0.0",
+          "tailwindcss": "^3.4.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "vite.config.js",
+        "index.html",
+        "src/",
+        "  main.js",
+        "  App.vue",
+        "  router/",
+        "    index.js",
+        "  views/",
+        "    Home.vue",
+        "    Speakers.vue",
+        "    Schedule.vue",
+        "  components/",
+        "    Navigation.vue",
+        "    SpeakerCard.vue",
+        "    ScheduleItem.vue",
+        "  composables/",
+        "    useLocalStorage.js",
+        "    useAPI.js",
+        "  data/",
+        "    speakers.json",
+        "  styles/",
+        "    main.css"
+      ]
+    },
+
+    {
+      "id": "nuxt-fullstack",
+      "level": 3,
+      "name": "Nuxt Full-Stack",
+      "technologies": ["Nuxt", "Vue", "Tailwind"],
+      "package": {
+        "name": "conference-nuxt",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "nuxt dev --port 8000",
+          "build": "nuxt build",
+          "preview": "nuxt preview --port 8000",
+          "generate": "nuxt generate",
+          "deploy:static": "npm run generate && npx surge .output/public conference-nuxt.surge.sh",
+          "deploy:vercel": "npx vercel --prod"
+        },
+        "dependencies": {
+          "nuxt": "^3.11.0",
+          "@nuxtjs/tailwindcss": "^6.11.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "nuxt.config.ts",
+        "tailwind.config.js",
+        "app.vue",
+        "pages/",
+        "  index.vue",
+        "  speakers/",
+        "    index.vue",
+        "    [slug].vue",
+        "  schedule.vue",
+        "layouts/",
+        "  default.vue",
+        "components/",
+        "  Navigation.vue",
+        "  SpeakerCard.vue",
+        "server/",
+        "  api/",
+        "    speakers.get.ts",
+        "    schedule.get.ts",
+        "content/",
+        "  speakers/",
+        "    john-doe.md",
+        "public/",
+        "  favicon.ico",
+        ".output/",
+        "  (generated)"
+      ]
+    },
+
+    {
+      "id": "svelte-spa",
+      "level": 3,
+      "name": "Svelte SPA",
+      "technologies": ["Svelte", "Vite", "Tailwind"],
+      "package": {
+        "name": "conference-svelte",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "vite dev --port 8000",
+          "build": "vite build",
+          "preview": "vite preview --port 8000",
+          "deploy": "npm run build && npx surge dist conference-svelte.surge.sh"
+        },
+        "dependencies": {
+          "svelte": "^4.2.0",
+          "svelte-spa-router": "^4.0.0"
+        },
+        "devDependencies": {
+          "vite": "^5.2.0",
+          "@sveltejs/vite-plugin-svelte": "^3.0.0",
+          "tailwindcss": "^3.4.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "vite.config.js",
+        "svelte.config.js",
+        "index.html",
+        "src/",
+        "  main.js",
+        "  App.svelte",
+        "  routes/",
+        "    Home.svelte",
+        "    Speakers.svelte",
+        "    Schedule.svelte",
+        "  components/",
+        "    Navigation.svelte",
+        "    SpeakerCard.svelte",
+        "  stores/",
+        "    speakers.js",
+        "    schedule.js",
+        "  lib/",
+        "    utils.js",
+        "  app.css"
+      ]
+    },
+
+    {
+      "id": "shadcn-react",
+      "level": 3,
+      "name": "React + ShadCN Components",
+      "technologies": ["React", "ShadCN", "Tailwind", "Vite"],
+      "package": {
+        "name": "conference-shadcn",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "vite --port 8000",
+          "build": "vite build",
+          "preview": "vite preview --port 8000",
+          "deploy": "npm run build && npx surge dist conference-shadcn.surge.sh",
+          "ui:add": "npx shadcn-ui@latest add"
+        },
+        "dependencies": {
+          "react": "^18.2.0",
+          "react-dom": "^18.2.0",
+          "react-router-dom": "^6.22.0",
+          "@radix-ui/react-slot": "^1.0.2",
+          "class-variance-authority": "^0.7.0",
+          "clsx": "^2.1.0",
+          "tailwind-merge": "^2.2.0",
+          "lucide-react": "^0.363.0"
+        },
+        "devDependencies": {
+          "vite": "^5.2.0",
+          "@vitejs/plugin-react": "^4.2.0",
+          "tailwindcss": "^3.4.0",
+          "tailwindcss-animate": "^1.0.7"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "vite.config.ts",
+        "tailwind.config.js",
+        "components.json",
+        "index.html",
+        "src/",
+        "  main.tsx",
+        "  App.tsx",
+        "  components/",
+        "    ui/",
+        "      button.tsx",
+        "      card.tsx",
+        "      badge.tsx",
+        "      dialog.tsx",
+        "    Navigation.tsx",
+        "    SpeakerCard.tsx",
+        "    ScheduleDialog.tsx",
+        "  pages/",
+        "    Home.tsx",
+        "    Speakers.tsx",
+        "    Schedule.tsx",
+        "  lib/",
+        "    utils.ts",
+        "  styles/",
+        "    globals.css"
+      ]
+    },
     {
       "id": "foundation",
       "level": 0,
@@ -1768,7 +2063,7 @@
       "id": "fullstack-ssr",
       "level": 3,
       "name": "Full-Stack SSR",
-      "technologies": ["Next.js", "React", "node:http", "node:fs"],
+      "technologies": ["Next.js", "React"],
       "package": {
         "name": "conference-nextjs",
         "version": "1.0.0",

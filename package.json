@@ -1,0 +1,20 @@
+{
+  "name": "web-engineering-mandala",
+  "version": "0.0.0",
+  "description": "## Sitzung 1: Formalia & Internet 101 (09.05.)",
+  "main": "index.html",
+  "scripts": {
+    "start": "PORT=1312 npx serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nextlevelshit/web-engineering-mandala.git"
+  },
+  "author": "Michael W. Czechowski <michaelczechowski@m6c9.de>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/nextlevelshit/web-engineering-mandala/issues"
+  },
+  "homepage": "https://github.com/nextlevelshit/web-engineering-mandala#readme"
+}
