@@ -100,7 +100,7 @@
       }
 
       .cluster-label {
-          font-size: 9px;
+          font-size: 22px;
           font-weight: 600;
           text-anchor: middle;
           fill: #a0aec0;
@@ -228,6 +228,16 @@
           border-radius: 3px;
           margin-right: 8px;
       }
+
+      .sector-background-label {
+          font-size: 120px;
+          font-weight: 900;
+          text-anchor: middle;
+          fill: rgba(255, 255, 255, 0.05);
+          text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+          pointer-events: none;
+          z-index: 1;
+      }
   </style>
 </head>
 <body>
@@ -266,10 +276,10 @@
     height: window.innerHeight,
     centerX: window.innerWidth / 2,
     centerY: window.innerHeight / 2,
-    coreRadius: 60,
-    ringWidth: 100,
-    ringGap: 40,
-    techNodeRadius: 15, // Increased for better clicking
+    coreRadius: 120,
+    ringWidth: 200, // Tripled from 100 to 300
+    ringGap: 120,
+    techNodeRadius: 15,
     sectorColors: {
       HTML: '#1572b6',
       CSS: '#f7df1e',
@@ -593,6 +603,14 @@
   function renderSector(parent, sector, ring) {
     const sectorGroup = parent.append('g').attr('class', `sector-group sector-${(sector.name || 'unknown').toLowerCase()}`);
 
+    // Add large background sector label (rendered first)
+    const labelPos = getLabelPosition((ring.innerRadius + ring.outerRadius) / 2, sector.midAngle);
+    if (false) sectorGroup.append('text')
+      .attr('x', labelPos.x)
+      .attr('y', labelPos.y + 25) // Offset for better centering
+      .attr('class', 'sector-background-label')
+      .text(sector.name.toUpperCase());
+
     // Sector arc
     const arcPath = getArcPath(ring.innerRadius, ring.outerRadius, sector.startAngle, sector.endAngle);
 
@@ -642,7 +660,7 @@
 
     // Cluster label
     const midAngle = (cluster.startAngle + cluster.endAngle) / 2;
-    const labelPos = getLabelPosition(ring.innerRadius + 20, midAngle);
+    const labelPos = getLabelPosition(ring.innerRadius + config.ringWidth / 2 - 20, midAngle);
 
     clusterGroup.append('text')
       .attr('x', labelPos.x)
