@@ -62,7 +62,7 @@
       }
 
       .technology-text {
-          font-size: 10px;
+          font-size: 22px;
           font-weight: 500;
           text-anchor: middle;
           pointer-events: none;
@@ -100,7 +100,7 @@
       }
 
       .cluster-label {
-          font-size: 22px;
+          font-size: 32px;
           font-weight: 600;
           text-anchor: middle;
           fill: #a0aec0;
@@ -238,6 +238,19 @@
           pointer-events: none;
           z-index: 1;
       }
+
+      .file-extension {
+          font-size: 14px;
+          font-weight: 600;
+          text-anchor: middle;
+          fill: #94a3b8;
+          text-shadow: 0 0 2px rgba(0, 0, 0, 0.9);
+          pointer-events: none;
+      }
+
+      .file-extension-small {
+          font-size: 12px;
+      }
   </style>
 </head>
 <body>
@@ -318,7 +331,7 @@
     'package.json': ['HTML5', 'CSS3', 'ES6+'],
     'HTML5': ['Pug', 'Handlebars', 'EJS'],
     'CSS3': ['Sass', 'PostCSS'],
-    'ES6+': ['Parcel', 'Vite', 'Webpack', 'TypeScript', 'Deno', 'Bun', 'SvelteKit'],
+    'ES6+': ['Parcel', 'Vite', 'TypeScript', 'Deno', 'Bun', 'SvelteKit'],
     'node:fetch': ['Express', 'Koa', 'Fastify', 'Hono'],
     'node:fs': ['11ty', 'Astro', 'Next.js', 'Nuxt'],
     'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
@@ -331,7 +344,6 @@
     'PostCSS': ['Tailwind', 'Flowbite'],
     'Parcel': ['React', 'Vue', 'Svelte'],
     'Vite': ['React', 'Vue', 'Svelte'],
-    'Webpack': ['React', 'Vue', 'Angular'],
     'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
     'Deno': ['Hono'],
     'Bun': ['Hono'],
@@ -696,13 +708,34 @@
         hideTooltip();
       });
 
-    // Technology label
+    // Render file extensions in orbit around technology node
+    if (tech.extensions && tech.extensions.length > 0) {
+      const extRadius = config.techNodeRadius + 22; // Distance from tech center
+      const angleStep = (Math.PI * 2) / tech.extensions.length;
+
+      tech.extensions.forEach((ext, index) => {
+        const angle = index * angleStep - Math.PI / 2; // Start at top
+        const extX = tech.position.x + Math.cos(angle) * extRadius;
+        const extY = tech.position.y + Math.sin(angle) * extRadius + 6;
+
+        // Scale font size based on zoom level and number of extensions
+        const fontClass = tech.extensions.length > 3 ? 'file-extension file-extension-small' : 'file-extension';
+
+        techGroup.append('text')
+          .attr('x', extX)
+          .attr('y', extY)
+          .attr('class', fontClass)
+          .text(ext);
+      });
+    }
+
+    // Technology label (existing code)
     if (config.showLabels) {
       const lines = wrapText(tech.name, 12);
       lines.forEach((line, lineIndex) => {
         techGroup.append('text')
           .attr('x', tech.position.x)
-          .attr('y', tech.position.y + config.techNodeRadius + 12 + (lineIndex * 10))
+          .attr('y', tech.position.y + config.techNodeRadius + 30 + (lineIndex * 10))
           .attr('class', 'technology-text')
           .text(line);
       });
@@ -860,7 +893,7 @@
             technologies: [
               {
                 name: "HTML5",
-                extensions: [".html", ".htm"],
+                extensions: [".html"],
                 description: "Modern semantic markup for accessible, SEO-friendly documents",
                 capabilities: [
                   "Document structure with semantic meaning",
@@ -895,7 +928,6 @@
                 technologies: [
                   {
                     name: "Browser APIs",
-                    extensions: [".js"],
                     description: "Native browser capabilities beyond basic DOM",
                     capabilities: [
                       "Geolocation, Local Storage, Service Workers",
@@ -906,7 +938,6 @@
                   },
                   {
                     name: "node:fetch",
-                    extensions: [".js", ".mjs"],
                     description: "Built-in Node.js HTTP client",
                     capabilities: [
                       "Server-side HTTP requests without dependencies",
@@ -916,7 +947,6 @@
                   },
                   {
                     name: "node:fs",
-                    extensions: [".js", ".mjs"],
                     description: "File system operations module",
                     capabilities: [
                       "Read/write files synchronously or asynchronously",
@@ -926,7 +956,7 @@
                   },
                   {
                     name: "ES6+",
-                    extensions: [".js", ".mjs"],
+                    extensions: [".js", ".mjs", ".cjs"],
                     description: "Contemporary JavaScript with latest language features",
                     capabilities: [
                       "Async/await for non-blocking operations",
@@ -1001,7 +1031,6 @@
               },
               {
                 name: "PostCSS",
-                extensions: [".css"],
                 description: "Post-processing CSS with JavaScript plugins",
                 capabilities: [
                   "Autoprefixer for vendor prefix management",
@@ -1020,7 +1049,6 @@
                 technologies: [
                   {
                     name: "Parcel",
-                    extensions: [".js", ".json"],
                     description: "Zero-configuration build tool",
                     capabilities: [
                       "Automatic dependency resolution",
@@ -1031,7 +1059,6 @@
                   },
                   {
                     name: "Vite",
-                    extensions: [".config.js", ".config.ts"],
                     description: "Lightning-fast dev server with ESM",
                     capabilities: [
                       "Instant server start with native ESM",
@@ -1041,19 +1068,7 @@
                     ]
                   },
                   {
-                    name: "Webpack",
-                    extensions: [".config.js"],
-                    description: "Highly configurable module bundler",
-                    capabilities: [
-                      "Advanced code splitting strategies",
-                      "Plugin ecosystem for any transformation",
-                      "Asset dependency graph management",
-                      "Production optimization features"
-                    ]
-                  },
-                  {
                     name: "SvelteKit",
-                    extensions: [".svelte", ".js", ".ts"],
                     description: "Svelte-powered full-stack framework",
                     capabilities: [
                       "File-based routing system",
@@ -1080,7 +1095,6 @@
                 technologies: [
                   {
                     name: "Deno",
-                    extensions: [".ts", ".js"],
                     description: "Secure TypeScript runtime",
                     capabilities: [
                       "Built-in TypeScript support without compilation",
@@ -1091,7 +1105,6 @@
                   },
                   {
                     name: "Bun",
-                    extensions: [".js", ".ts"],
                     description: "Fast all-in-one JavaScript runtime",
                     capabilities: [
                       "Extremely fast package installation",
@@ -1144,7 +1157,6 @@
             technologies: [
               {
                 name: "Tailwind",
-                extensions: [".css"],
                 description: "Utility-first CSS framework",
                 capabilities: [
                   "Rapid prototyping with utility classes",
@@ -1155,7 +1167,6 @@
               },
               {
                 name: "Bootstrap",
-                extensions: [".css", ".scss"],
                 description: "Popular CSS framework with pre-built components",
                 capabilities: [
                   "Responsive grid system and utilities",
@@ -1166,7 +1177,6 @@
               },
               {
                 name: "ShadCN",
-                extensions: [".tsx", ".jsx"],
                 description: "Re-usable components built with Radix UI and Tailwind",
                 capabilities: [
                   "Copy-paste component architecture",
@@ -1177,7 +1187,6 @@
               },
               {
                 name: "Flowbite",
-                extensions: [".css", ".js"],
                 description: "Tailwind CSS component library",
                 capabilities: [
                   "Pre-built components with Tailwind classes",
@@ -1245,7 +1254,6 @@
                 technologies: [
                   {
                     name: "Express",
-                    extensions: [".js", ".ts"],
                     description: "Minimal web framework for Node.js",
                     capabilities: [
                       "Middleware-based request processing",
@@ -1256,7 +1264,6 @@
                   },
                   {
                     name: "Koa",
-                    extensions: [".js", ".ts"],
                     description: "Next-generation web framework by Express team",
                     capabilities: [
                       "Async/await by default",
@@ -1267,7 +1274,6 @@
                   },
                   {
                     name: "Fastify",
-                    extensions: [".js", ".ts"],
                     description: "Fast and low overhead web framework",
                     capabilities: [
                       "JSON schema validation built-in",
@@ -1278,7 +1284,6 @@
                   },
                   {
                     name: "Hono",
-                    extensions: [".js", ".ts"],
                     description: "Ultrafast web framework for edge environments",
                     capabilities: [
                       "Edge runtime compatibility (Cloudflare Workers, Deno)",
@@ -1304,8 +1309,8 @@
                     ]
                   },
                   {
-                    name: "11ty",
-                    extensions: [".11ty.js", ".md"],
+                    name: "GatsbyJS",
+                    extensions: [".jsx", ".tsx", ".md", ".mdx"],
                     description: "Simple, flexible static site generator",
                     capabilities: [
                       "Multiple template languages support",
@@ -1314,9 +1319,19 @@
                       "Zero-config deployment ready"
                     ]
                   },
+/*                  {
+                    name: "11ty",
+                    extensions: [".md"],
+                    description: "Simple, flexible static site generator",
+                    capabilities: [
+                      "Multiple template languages support",
+                      "Data-driven site generation from any source",
+                      "Extensible plugin ecosystem",
+                      "Zero-config deployment ready"
+                    ]
+                  },*/
                   {
                     name: "Next.js",
-                    extensions: [".js", ".jsx", ".ts", ".tsx"],
                     description: "React-based full-stack framework",
                     capabilities: [
                       "Server-side rendering and static generation",
@@ -1327,7 +1342,6 @@
                   },
                   {
                     name: "Nuxt",
-                    extensions: [".vue", ".js", ".ts"],
                     description: "Vue.js-based full-stack framework",
                     capabilities: [
                       "Universal rendering with Vue.js",
