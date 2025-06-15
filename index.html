@@ -832,36 +832,36 @@
 
   // Technology relationships for path creation
   const techRelationships = {
-    // Core to Build Tools
-    'package.json': ['HTML5', 'CSS3', 'JavaScript'],
-    'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
-    'CSS3': ['Sass', 'PostCSS'],
-    'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
-    'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
-    'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
-    'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
+  // Core to Build Tools
+  'package.json': ['HTML5', 'CSS3', 'JavaScript'],
+  'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
+  'CSS3': ['Sass', 'PostCSS'],
+  'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
+  'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
+  'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
+  'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
 
-    // Build Tools to Application Layer
-    // 'Pug': ['Astro'],
-    // 'Handlebars': ['11ty'],
-    // 'EJS': ['Express'],
-    // 'Sass': ['Flowbite'],
-    'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
-    'Parcel': ['React', 'Vue', 'Svelte'],
-    'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
-    // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
-    'Deno': ['Hono'],
-    'Bun': ['Hono'],
+  // Build Tools to Application Layer
+  // 'Pug': ['Astro'],
+  // 'Handlebars': ['11ty'],
+  // 'EJS': ['Express'],
+  // 'Sass': ['Flowbite'],
+  'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
+  'Parcel': ['React', 'Vue', 'Svelte'],
+  'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
+  // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
+  'Deno': ['Hono'],
+  'Bun': ['Hono'],
 
-    // Application Layer connections (same level)
-    'React': ['Next.js'],
-    'Vue': ['Nuxt'],
-    'SvelteKit': ['Svelte'],
-    'Tailwind': ['Flowbite'],
-    'Express': ['Pug', 'Handlebars', 'EJS']
-  };
+  // Application Layer connections (same level)
+  'React': ['Next.js'],
+  'Vue': ['Nuxt'],
+  'SvelteKit': ['Svelte'],
+  'Tailwind': ['Flowbite'],
+  'Express': ['Pug', 'Handlebars', 'EJS']
+};
 
-    // Cleaned data with shorter names and proper structure
+  // Cleaned data with shorter names and proper structure
   const webEngineeringSkillTree = {
     metadata: {
       title: "Web Engineering Mandala",
@@ -1389,8 +1389,264 @@
     ]
   };
 
-    // Initialize the visualization
-    renderSkillTree(webEngineeringSkillTree);
-  </script>
-  </body>
+  const examples = [
+    {
+      "id": "foundation",
+      "level": 0,
+      "name": "Foundation Only",
+      "technologies": ["package.json"],
+      "package": {
+        "name": "conference-landing",
+        "version": "1.0.0",
+        "scripts": {
+          "start": "python3 -m http.server 8000",
+          "deploy": "rsync -av ./ user@server:/var/www/"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "core-vanilla",
+      "level": 1,
+      "name": "Core Web Technologies",
+      "technologies": ["HTML5", "CSS3", "JavaScript"],
+      "package": {
+        "name": "conference-vanilla",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "npx serve . -p 8000",
+          "build": "echo 'No build step needed'",
+          "deploy": "npx surge . conference-vanilla.surge.sh"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "index.html",
+        "speakers.html",
+        "schedule.html",
+        "css/",
+        "  main.css",
+        "  layout.css",
+        "js/",
+        "  app.js",
+        "  utils.js",
+        "assets/",
+        "  logo.svg",
+        "  hero.jpg"
+      ]
+    },
+    {
+      "id": "build-minimal",
+      "level": 2,
+      "name": "Minimal Build Tools",
+      "technologies": ["Parcel", "HTML5", "CSS3", "JavaScript"],
+      "package": {
+        "name": "conference-parcel",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "parcel src/index.html --port 8000",
+          "build": "parcel build src/index.html --dist-dir dist --public-url ./",
+          "preview": "npx serve dist -p 8000"
+        },
+        "devDependencies": {
+          "parcel": "^2.12.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "src/",
+        "  index.html",
+        "  speakers.html",
+        "  schedule.html",
+        "  styles/",
+        "    main.css",
+        "    components.css",
+        "  js/",
+        "    app.js",
+        "    modules/",
+        "      calendar.js",
+        "      speakers.js",
+        "  assets/",
+        "    images/",
+        "      logo.svg",
+        "dist/",
+        "  (generated)"
+      ]
+    },
+    {
+      "id": "template-processing",
+      "level": 2,
+      "name": "Template + CSS Processing",
+      "technologies": ["Vite", "Pug", "Tailwind", "PostCSS"],
+      "package": {
+        "name": "conference-templates",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "vite --port 8000",
+          "build": "vite build",
+          "preview": "npx serve dist -p 8000"
+        },
+        "devDependencies": {
+          "vite": "^5.2.0",
+          "pug": "^3.0.2",
+          "tailwindcss": "^3.4.0",
+          "autoprefixer": "^10.4.0",
+          "postcss": "^8.4.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "vite.config.js",
+        "tailwind.config.js",
+        "postcss.config.js",
+        "src/",
+        "  index.pug",
+        "  speakers.pug",
+        "  schedule.pug",
+        "  templates/",
+        "    layout.pug",
+        "    components/",
+        "      speaker-card.pug",
+        "      nav.pug",
+        "  styles/",
+        "    main.css",
+        "    components.css",
+        "  js/",
+        "    app.js",
+        "    modules/",
+        "      calendar.js",
+        "  data/",
+        "    speakers.json",
+        "    schedule.json",
+        "dist/",
+        "  (generated)"
+      ]
+    },
+    {
+      "id": "react-spa",
+      "level": 3,
+      "name": "React SPA",
+      "technologies": ["React", "Vite", "Tailwind", "Browser APIs"],
+      "package": {
+        "name": "conference-react",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "vite --port 8000",
+          "build": "vite build",
+          "preview": "npx serve dist -p 8000"
+        },
+        "dependencies": {
+          "react": "^18.2.0",
+          "react-dom": "^18.2.0"
+        },
+        "devDependencies": {
+          "vite": "^5.2.0",
+          "@vitejs/plugin-react": "^4.2.0",
+          "tailwindcss": "^3.4.0",
+          "autoprefixer": "^10.4.0",
+          "postcss": "^8.4.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "vite.config.js",
+        "tailwind.config.js",
+        "index.html",
+        "src/",
+        "  main.jsx",
+        "  App.jsx",
+        "  components/",
+        "    Layout.jsx",
+        "    Navigation.jsx",
+        "    SpeakerCard.jsx",
+        "    ScheduleItem.jsx",
+        "  pages/",
+        "    Home.jsx",
+        "    Speakers.jsx",
+        "    Schedule.jsx",
+        "  hooks/",
+        "    useLocalStorage.js",
+        "    useAPI.js",
+        "  data/",
+        "    speakers.json",
+        "    schedule.json",
+        "  styles/",
+        "    index.css",
+        "dist/",
+        "  (generated)"
+      ]
+    },
+    {
+      "id": "fullstack-ssr",
+      "level": 3,
+      "name": "Full-Stack SSR",
+      "technologies": ["Next.js", "React", "node:http", "node:fs"],
+      "package": {
+        "name": "conference-nextjs",
+        "version": "1.0.0",
+        "scripts": {
+          "dev": "next dev -p 8000",
+          "build": "next build",
+          "start": "next start",
+          "export": "next build && next export"
+        },
+        "dependencies": {
+          "next": "^14.1.0",
+          "react": "^18.2.0",
+          "react-dom": "^18.2.0"
+        },
+        "devDependencies": {
+          "@types/node": "^20.0.0",
+          "@types/react": "^18.0.0",
+          "typescript": "^5.0.0",
+          "tailwindcss": "^3.4.0"
+        }
+      },
+      "fileTree": [
+        "package.json",
+        "next.config.js",
+        "tailwind.config.js",
+        "tsconfig.json",
+        "src/",
+        "  app/",
+        "    layout.tsx",
+        "    page.tsx",
+        "    speakers/",
+        "      page.tsx",
+        "    schedule/",
+        "      page.tsx",
+        "    api/",
+        "      speakers/",
+        "        route.ts",
+        "      schedule/",
+        "        route.ts",
+        "  components/",
+        "    Navigation.tsx",
+        "    SpeakerCard.tsx",
+        "    ScheduleItem.tsx",
+        "  lib/",
+        "    data.ts",
+        "    utils.ts",
+        "  styles/",
+        "    globals.css",
+        "  data/",
+        "    speakers.json",
+        "    schedule.json",
+        ".next/",
+        "  (generated)",
+        "out/",
+        "  (generated for export)"
+      ]
+    }
+  ];
+
+  // Initialize the visualization
+  renderSkillTree(webEngineeringSkillTree);
+</script>
+</body>
 </html>
