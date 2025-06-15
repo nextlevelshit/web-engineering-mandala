@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Engineering Learning Roadmap - DHBW Stuttgart</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
+          color: #2d3748;
+      }
+
+      .header {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          padding: 1rem 2rem;
+          box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+          position: sticky;
+          top: 0;
+          z-index: 100;
+      }
+
+      .header h1 {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: #2d3748;
+          margin-bottom: 0.5rem;
+      }
+
+      .header p {
+          color: #718096;
+          font-size: 0.9rem;
+      }
+
+      .roadmap-container {
+          position: relative;
+          width: 100%;
+          height: calc(100vh - 120px);
+          overflow: hidden;
+      }
+
+      .roadmap-svg {
+          width: 100%;
+          height: 100%;
+          cursor: grab;
+      }
+
+      .roadmap-svg:active {
+          cursor: grabbing;
+      }
+
+      /* Node Styles */
+      .node-group {
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+
+      .node-group:hover {
+          transform: scale(1.05);
+      }
+
+      .node-circle {
+          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+          transition: all 0.3s ease;
+      }
+
+      .node-group:hover .node-circle {
+          filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.25));
+      }
+
+      .node-text {
+          font-size: 12px;
+          font-weight: 600;
+          text-anchor: middle;
+          fill: white;
+          pointer-events: none;
+      }
+
+      .node-label {
+          font-size: 11px;
+          font-weight: 500;
+          text-anchor: middle;
+          fill: #2d3748;
+          pointer-events: none;
+      }
+
+      /* Connection Lines */
+      .connection-line {
+          stroke: #cbd5e0;
+          stroke-width: 2;
+          fill: none;
+          opacity: 0.6;
+      }
+
+      .session-line {
+          stroke: #4299e1;
+          stroke-width: 3;
+          fill: none;
+          opacity: 0.8;
+          stroke-dasharray: 5,5;
+          animation: flow 2s linear infinite;
+      }
+
+      @keyframes flow {
+          0% { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: 10; }
+      }
+
+      /* Sidebar */
+      .sidebar {
+          position: fixed;
+          right: -400px;
+          top: 120px;
+          width: 380px;
+          height: calc(100vh - 120px);
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          border-radius: 12px 0 0 12px;
+          box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+          transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow-y: auto;
+          z-index: 50;
+      }
+
+      .sidebar.open {
+          right: 0;
+      }
+
+      .sidebar-content {
+          padding: 2rem;
+      }
+
+      .sidebar-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+          border-bottom: 2px solid #e2e8f0;
+      }
+
+      .close-btn {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: #718096;
+          padding: 0.5rem;
+          border-radius: 6px;
+          transition: all 0.2s;
+      }
+
+      .close-btn:hover {
+          background: #f7fafc;
+          color: #2d3748;
+      }
+
+      .tech-badge {
+          display: inline-block;
+          background: #edf2f7;
+          color: #4a5568;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 500;
+          margin: 0.25rem;
+      }
+
+      .session-indicator {
+          background: linear-gradient(45deg, #667eea, #764ba2);
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          display: inline-block;
+          margin-bottom: 1rem;
+      }
+
+      /* Controls */
+      .controls {
+          position: fixed;
+          bottom: 2rem;
+          left: 2rem;
+          display: flex;
+          gap: 1rem;
+          z-index: 50;
+      }
+
+      .control-btn {
+          background: rgba(255, 255, 255, 0.9);
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 25px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          backdrop-filter: blur(10px);
+      }
+
+      .control-btn:hover {
+          background: white;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .legend {
+          position: fixed;
+          top: 140px;
+          left: 2rem;
+          background: rgba(255, 255, 255, 0.9);
+          padding: 1rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          backdrop-filter: blur(10px);
+          z-index: 50;
+      }
+
+      .legend-item {
+          display: flex;
+          align-items: center;
+          margin: 0.5rem 0;
+          font-size: 0.8rem;
+      }
+
+      .legend-color {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          margin-right: 0.5rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+          .header {
+              padding: 1rem;
+          }
+
+          .sidebar {
+              width: 100%;
+              right: -100%;
+          }
+
+          .controls {
+              bottom: 1rem;
+              left: 1rem;
+              flex-direction: column;
+          }
+
+          .legend {
+              position: relative;
+              margin: 1rem;
+              left: 0;
+              top: 0;
+          }
+      }
+  </style>
+</head>
+<body>
+<header class="header">
+  <h1>Web Engineering Learning Roadmap</h1>
+  <p>DHBW Stuttgart - Michael Werner Czechowski - Interactive Learning Path</p>
+</header>
+
+<div class="legend">
+  <div class="legend-item">
+    <div class="legend-color" style="background: #4c51bf;"></div>
+    <span>HTML</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background: #319795;"></div>
+    <span>CSS</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background: #e53e3e;"></div>
+    <span>JavaScript</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-color" style="background: #2d3748;"></div>
+    <span>Core</span>
+  </div>
+</div>
+
+<div class="roadmap-container">
+  <svg class="roadmap-svg" id="roadmap"></svg>
+</div>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-content">
+    <div class="sidebar-header">
+      <h3 id="sidebar-title">Select a Technology</h3>
+      <button class="close-btn" onclick="closeSidebar()">×</button>
+    </div>
+    <div id="sidebar-body">
+      <p>Click on any node to explore technologies, frameworks, and learning resources.</p>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="control-btn" onclick="resetView()">Reset View</button>
+  <button class="control-btn" onclick="toggleConnections()">Toggle Connections</button>
+  <button class="control-btn" onclick="showSessionPath()">Show Sessions</button>
+</div>
+
+<script>
+  // Data structure from our previous discussion
+  const roadmapData = {
+    metadata: {
+      course: "Web Engineering - DHBW Stuttgart",
+      instructor: "Michael Werner Czechowski",
+      sessions: 9,
+      progression: "Fundamentals → Tools → Architecture → Production"
+    },
+
+    center: {
+      name: "package.json",
+      description: "Project manifest - npm scripts, dependencies, configuration",
+      explanation: "Every modern web project starts here - defines what can run via npx",
+      session: 3,
+      color: "#2d3748",
+      level: 0,
+      x: 0,
+      y: 0
+    },
+
+    rings: [
+      {
+        level: 1,
+        name: "Core Web Technologies",
+        description: "The holy trinity - what browsers actually understand",
+        sessions: [2, 3],
+        radius: 150,
+        sectors: [
+          {
+            name: "HTML",
+            color: "#4c51bf",
+            description: "Structure and semantics - the accessibility foundation",
+            session: 2,
+            angle: 0,
+            technologies: [
+              {
+                name: "HTML5 Semantics",
+                description: "header, main, nav, article, section, aside",
+                explanation: "Screen readers and SEO depend on proper semantic structure"
+              },
+              {
+                name: "Forms & Inputs",
+                description: "autocomplete attributes, proper labeling",
+                explanation: "cc-number, family-name - browser autofill magic",
+                accessibility: "Labels are mandatory - screen reader navigation"
+              },
+              {
+                name: "Microdata",
+                description: "Schema.org structured data for SEO",
+                explanation: "itemscope, itemtype, itemprop - help search engines understand content"
+              }
+            ]
+          },
+          {
+            name: "CSS",
+            color: "#319795",
+            description: "Presentation layer - visual design and layout",
+            session: 2,
+            angle: 120,
+            technologies: [
+              {
+                name: "CSS3 Fundamentals",
+                description: "Selectors, specificity, cascade",
+                explanation: "Inline > IDs > Classes > Elements - understanding the cascade prevents debugging hell"
+              },
+              {
+                name: "Layout Systems",
+                description: "Flexbox, Grid, positioning",
+                explanation: "Flexbox for 1D layouts, Grid for 2D - modern layout without floats"
+              },
+              {
+                name: "Tailwind CSS",
+                description: "Utility-first CSS framework",
+                explanation: "Atomic classes - rapid prototyping, consistent design system"
+              }
+            ]
+          },
+          {
+            name: "JavaScript",
+            color: "#e53e3e",
+            description: "Behavior layer - interactivity and logic",
+            session: 3,
+            angle: 240,
+            technologies: [
+              {
+                name: "ES6+ Features",
+                description: "Arrow functions, destructuring, modules, async/await",
+                explanation: "Modern syntax - const/let over var, template literals, spread operator"
+              },
+              {
+                name: "DOM API",
+                description: "querySelector, addEventListener, manipulation",
+                explanation: "Direct browser interaction - foundation for all frontend frameworks"
+              },
+              {
+                name: "Fetch API",
+                description: "HTTP requests, Promise-based networking",
+                explanation: "Replaces XMLHttpRequest - cleaner async data fetching"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        level: 2,
+        name: "Build Tools & Application Architecture",
+        description: "Development workflow and application patterns",
+        sessions: [3, 4, 5],
+        radius: 280,
+        sectors: [
+          {
+            name: "HTML Tooling",
+            color: "#6366f1",
+            description: "Semantic web and accessibility tooling",
+            session: 2,
+            angle: 0,
+            technologies: [
+              {
+                name: "WCAG Components",
+                description: "Native accessible elements like details/summary",
+                explanation: "Built-in browser accessibility - no JavaScript required"
+              },
+              {
+                name: "Web Components",
+                description: "Custom elements, shadow DOM, templates",
+                explanation: "Browser-native component system - framework-agnostic reusability"
+              }
+            ]
+          },
+          {
+            name: "CSS Tooling",
+            color: "#0891b2",
+            description: "Processing and framework tooling for styles",
+            session: 2,
+            angle: 120,
+            technologies: [
+              {
+                name: "PostCSS",
+                description: "CSS processing with plugins",
+                explanation: "Autoprefixer, future CSS syntax, optimization"
+              },
+              {
+                name: "Flowbite",
+                description: "Tailwind component library",
+                explanation: "Pre-built components accelerate development"
+              }
+            ]
+          },
+          {
+            name: "JS Architecture",
+            color: "#dc2626",
+            description: "Build tools and application architecture patterns",
+            sessions: [3, 4, 5],
+            angle: 240,
+            clusters: [
+              {
+                name: "Bundlers",
+                description: "Module bundling and asset processing",
+                technologies: ["Vite", "Webpack", "Parcel", "esbuild"]
+              },
+              {
+                name: "Frontend",
+                description: "Component-based UI libraries",
+                technologies: ["React", "Vue.js", "Svelte", "Angular"]
+              },
+              {
+                name: "Backend",
+                description: "Server-side JavaScript runtime and frameworks",
+                technologies: ["Node.js", "Express.js", "Fastify", "WebSockets"]
+              },
+              {
+                name: "SSR/SSG",
+                description: "Server-side rendering and static site generation",
+                technologies: ["Next.js", "Nuxt", "SvelteKit", "Astro"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        level: 3,
+        name: "Production & Professional Development",
+        description: "Testing, deployment, and professional practices",
+        sessions: [6, 7, 8],
+        radius: 420,
+        sectors: [
+          {
+            name: "HTML Production",
+            color: "#8b5cf6",
+            description: "SEO, accessibility, and web standards in production",
+            angle: 0,
+            technologies: [
+              {
+                name: "SEO Optimization",
+                description: "Meta tags, structured data, performance",
+                explanation: "Core Web Vitals, Lighthouse scores - search ranking factors"
+              },
+              {
+                name: "WCAG Compliance",
+                description: "Web Content Accessibility Guidelines",
+                explanation: "Legal requirement in many jurisdictions - inclusive design"
+              }
+            ]
+          },
+          {
+            name: "CSS Production",
+            color: "#06b6d4",
+            description: "Scalable styling and design systems",
+            angle: 120,
+            technologies: [
+              {
+                name: "Design Systems",
+                description: "Component libraries and style guides",
+                explanation: "Consistent UI across teams - documented patterns and tokens"
+              },
+              {
+                name: "Performance Optimization",
+                description: "Critical CSS, code splitting, tree shaking",
+                explanation: "Load only what's needed - faster time to first paint"
+              }
+            ]
+          },
+          {
+            name: "JS Production",
+            color: "#f56565",
+            description: "Testing, deployment, and operational concerns",
+            sessions: [6, 7, 8],
+            angle: 240,
+            technologies: [
+              {
+                name: "Testing Strategy",
+                description: "Unit, integration, end-to-end testing",
+                explanation: "Test pyramid - many unit tests, fewer integration, minimal E2E"
+              },
+              {
+                name: "TypeScript",
+                description: "Static typing for JavaScript",
+                explanation: "Catch errors at compile time - better developer experience at scale"
+              },
+              {
+                name: "Docker & Deployment",
+                description: "Containerization and production deployment",
+                explanation: "Consistent environments - dev/prod parity"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+  // SVG setup
+  const svg = d3.select("#roadmap");
+  const width = window.innerWidth;
+  const height = window.innerHeight - 120;
+
+  svg.attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+
+  const g = svg.append("g")
+    .attr("transform", `translate(${width/2}, ${height/2})`);
+
+  // Zoom behavior
+  const zoom = d3.zoom()
+    .scaleExtent([0.5, 3])
+    .on("zoom", (event) => {
+      g.attr("transform", event.transform.translate(width/2, height/2));
+    });
+
+  svg.call(zoom);
+
+  let showConnections = true;
+  let nodes = [];
+
+  // Generate node positions
+  function generateNodes() {
+    nodes = [];
+
+    // Center node
+    nodes.push({
+      ...roadmapData.center,
+      id: 'center',
+      type: 'center'
+    });
+
+    // Ring nodes
+    roadmapData.rings.forEach((ring, ringIndex) => {
+      ring.sectors.forEach((sector, sectorIndex) => {
+        const angle = (sector.angle * Math.PI) / 180;
+        const x = Math.cos(angle) * ring.radius;
+        const y = Math.sin(angle) * ring.radius;
+
+        const node = {
+          ...sector,
+          id: `ring-${ringIndex}-sector-${sectorIndex}`,
+          type: 'sector',
+          ring: ringIndex + 1,
+          x: x,
+          y: y,
+          radius: ring.radius
+        };
+
+        nodes.push(node);
+
+        // Add cluster nodes for JS Architecture
+        if (sector.clusters) {
+          sector.clusters.forEach((cluster, clusterIndex) => {
+            const clusterAngle = angle + (clusterIndex - (sector.clusters.length - 1) / 2) * 0.3;
+            const clusterRadius = ring.radius + 60;
+            const clusterX = Math.cos(clusterAngle) * clusterRadius;
+            const clusterY = Math.sin(clusterAngle) * clusterRadius;
+
+            nodes.push({
+              ...cluster,
+              id: `cluster-${ringIndex}-${sectorIndex}-${clusterIndex}`,
+              type: 'cluster',
+              parent: node.id,
+              x: clusterX,
+              y: clusterY,
+              color: sector.color
+            });
+          });
+        }
+      });
+    });
+  }
+
+  // Render roadmap
+  function renderRoadmap() {
+    generateNodes();
+
+    // Clear existing content
+    g.selectAll("*").remove();
+
+    // Draw connection lines
+    if (showConnections) {
+      drawConnections();
+    }
+
+    // Draw nodes
+    drawNodes();
+
+    // Draw center last (on top)
+    drawCenterNode();
+  }
+
+  function drawConnections() {
+    const connections = g.append("g").attr("class", "connections");
+
+    nodes.forEach(node => {
+      if (node.type === 'cluster') {
+        const parent = nodes.find(n => n.id === node.parent);
+        if (parent) {
+          connections.append("line")
+            .attr("class", "connection-line")
+            .attr("x1", parent.x)
+            .attr("y1", parent.y)
+            .attr("x2", node.x)
+            .attr("y2", node.y);
+        }
+      } else if (node.type === 'sector' && node.ring > 1) {
+        // Connect to center
+        connections.append("line")
+          .attr("class", "connection-line")
+          .attr("x1", 0)
+          .attr("y1", 0)
+          .attr("x2", node.x * 0.7)
+          .attr("y2", node.y * 0.7);
+      }
+    });
+  }
+
+  function drawNodes() {
+    const nodeGroups = g.selectAll(".node-group")
+      .data(nodes.filter(n => n.type !== 'center'))
+      .enter()
+      .append("g")
+      .attr("class", "node-group")
+      .attr("transform", d => `translate(${d.x}, ${d.y})`)
+      .on("click", handleNodeClick);
+
+    // Node circles
+    nodeGroups.append("circle")
+      .attr("class", "node-circle")
+      .attr("r", d => {
+        if (d.type === 'cluster') return 25;
+        if (d.ring === 1) return 35;
+        if (d.ring === 2) return 40;
+        return 45;
+      })
+      .attr("fill", d => d.color)
+      .attr("stroke", "white")
+      .attr("stroke-width", 3);
+
+    // Node text
+    nodeGroups.append("text")
+      .attr("class", "node-text")
+      .attr("dy", "0.35em")
+      .text(d => {
+        if (d.type === 'cluster') return d.name;
+        return d.name.length > 8 ? d.name.substring(0, 8) + "..." : d.name;
+      });
+
+    // Node labels (below nodes)
+    nodeGroups.append("text")
+      .attr("class", "node-label")
+      .attr("dy", d => {
+        if (d.type === 'cluster') return "45px";
+        if (d.ring === 1) return "55px";
+        if (d.ring === 2) return "60px";
+        return "65px";
+      })
+      .text(d => d.session ? `Session ${d.session}` : "");
+  }
+
+  function drawCenterNode() {
+    const centerGroup = g.append("g")
+      .attr("class", "node-group center-node")
+      .on("click", () => handleNodeClick(null, roadmapData.center));
+
+    centerGroup.append("circle")
+      .attr("class", "node-circle")
+      .attr("r", 50)
+      .attr("fill", roadmapData.center.color)
+      .attr("stroke", "white")
+      .attr("stroke-width", 4);
+
+    centerGroup.append("text")
+      .attr("class", "node-text")
+      .attr("dy", "0.35em")
+      .text("package.json")
+      .style("font-size", "14px");
+  }
+
+  function handleNodeClick(event, d) {
+    const sidebar = document.getElementById("sidebar");
+    const title = document.getElementById("sidebar-title");
+    const body = document.getElementById("sidebar-body");
+
+    title.textContent = d.name;
+
+    let content = `
+                <div class="session-indicator">
+                    ${d.session ? `Session ${d.session}` : d.sessions ? `Sessions ${d.sessions.join(', ')}` : 'Core Concept'}
+                </div>
+                <p style="margin-bottom: 1rem; line-height: 1.6;"><strong>${d.description}</strong></p>
+            `;
+
+    if (d.explanation) {
+      content += `<p style="margin-bottom: 1rem; line-height: 1.6;">${d.explanation}</p>`;
+    }
+
+    if (d.technologies) {
+      content += `<h4 style="margin: 1.5rem 0 1rem 0; color: #2d3748;">Technologies & Concepts:</h4>`;
+      d.technologies.forEach(tech => {
+        if (typeof tech === 'string') {
+          content += `<span class="tech-badge">${tech}</span>`;
+        } else {
+          content += `
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: #f7fafc; border-radius: 8px; border-left: 4px solid ${d.color};">
+                                <h5 style="margin-bottom: 0.5rem; color: #2d3748;">${tech.name}</h5>
+                                <p style="font-size: 0.9rem; color: #4a5568; margin-bottom: 0.5rem;">${tech.description}</p>
+                                ${tech.explanation ? `<p style="font-size: 0.85rem; color: #718096; font-style: italic;">${tech.explanation}</p>` : ''}
+                            </div>
+                        `;
+        }
+      });
+    }
+
+    if (d.clusters) {
+      content += `<h4 style="margin: 1.5rem 0 1rem 0; color: #2d3748;">Architecture Clusters:</h4>`;
+      d.clusters.forEach(cluster => {
+        content += `
+                        <div style="margin-bottom: 1rem; padding: 1rem; background: #f7fafc; border-radius: 8px; border-left: 4px solid ${d.color};">
+                            <h5 style="margin-bottom: 0.5rem; color: #2d3748;">${cluster.name}</h5>
+                            <p style="font-size: 0.9rem; color: #4a5568; margin-bottom: 0.5rem;">${cluster.description}</p>
+                            <div>
+                                ${cluster.technologies.map(tech => `<span class="tech-badge">${tech}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+      });
+    }
+
+    body.innerHTML = content;
+    sidebar.classList.add("open");
+  }
+
+  function closeSidebar() {
+    document.getElementById("sidebar").classList.remove("open");
+  }
+
+  function resetView() {
+    svg.transition()
+      .duration(750)
+      .call(zoom.transform, d3.zoomIdentity.translate(width/2, height/2));
+  }
+
+  function toggleConnections() {
+    showConnections = !showConnections;
+    renderRoadmap();
+  }
+
+  function showSessionPath() {
+    // Highlight session progression
+    const sessionNodes = nodes.filter(n => n.session).sort((a, b) => a.session - b.session);
+
+    g.selectAll(".session-line").remove();
+
+    for (let i = 0; i < sessionNodes.length - 1; i++) {
+      const current = sessionNodes[i];
+      const next = sessionNodes[i + 1];
+
+      g.append("path")
+        .attr("class", "session-line")
+        .attr("d", `M ${current.x} ${current.y} Q ${(current.x + next.x) / 2} ${(current.y + next.y) / 2 - 50} ${next.x} ${next.y}`);
+    }
+  }
+
+  // Initialize
+  renderRoadmap();
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    const newWidth = window.innerWidth;
+    const newHeight = window.innerHeight - 120;
+    svg.attr("viewBox", `0 0 ${newWidth} ${newHeight}`);
+    renderRoadmap();
+  });
+
+  // Close sidebar when clicking outside
+  document.addEventListener('click', (e) => {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && !e.target.closest('.node-group')) {
+      closeSidebar();
+    }
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeSidebar();
+    }
+  });
+
+  // Add focus management for accessibility
+  function focusNode(nodeId) {
+    const node = g.select(`#${nodeId}`);
+    if (node.node()) {
+      node.node().focus();
+    }
+  }
+
+  // Enhanced keyboard navigation for roadmap
+  svg.attr('tabindex', '0')
+    .on('keydown', function(event) {
+      switch(event.key) {
+        case 'ArrowUp':
+          event.preventDefault();
+          zoom.translateBy(svg, 0, 50);
+          break;
+        case 'ArrowDown':
+          event.preventDefault();
+          zoom.translateBy(svg, 0, -50);
+          break;
+        case 'ArrowLeft':
+          event.preventDefault();
+          zoom.translateBy(svg, 50, 0);
+          break;
+        case 'ArrowRight':
+          event.preventDefault();
+          zoom.translateBy(svg, -50, 0);
+          break;
+        case '+':
+        case '=':
+          event.preventDefault();
+          zoom.scaleBy(svg, 1.2);
+          break;
+        case '-':
+          event.preventDefault();
+          zoom.scaleBy(svg, 0.8);
+          break;
+        case '0':
+          event.preventDefault();
+          resetView();
+          break;
+      }
+    });
+
+  // Add ARIA labels and roles for accessibility
+  function enhanceAccessibility() {
+    svg.attr('role', 'img')
+      .attr('aria-label', 'Interactive Web Engineering Learning Roadmap');
+
+    g.selectAll('.node-group')
+      .attr('role', 'button')
+      .attr('tabindex', '0')
+      .attr('aria-label', d => `${d.name} - ${d.description}`)
+      .on('keydown', function(event, d) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          handleNodeClick(event, d);
+        }
+      });
+  }
+
+  // Call accessibility enhancements after rendering
+  function renderRoadmap() {
+    generateNodes();
+
+    // Clear existing content
+    g.selectAll("*").remove();
+
+    // Draw connection lines
+    if (showConnections) {
+      drawConnections();
+    }
+
+    // Draw nodes
+    drawNodes();
+
+    // Draw center last (on top)
+    drawCenterNode();
+
+    // Enhance accessibility
+    enhanceAccessibility();
+  }
+
+  // Add search functionality
+  function addSearchFeature() {
+    const searchContainer = d3.select('body')
+      .append('div')
+      .attr('class', 'search-container')
+      .style('position', 'fixed')
+      .style('top', '140px')
+      .style('right', '2rem')
+      .style('background', 'rgba(255, 255, 255, 0.9)')
+      .style('padding', '1rem')
+      .style('border-radius', '12px')
+      .style('box-shadow', '0 4px 15px rgba(0, 0, 0, 0.1)')
+      .style('backdrop-filter', 'blur(10px)')
+      .style('z-index', '50');
+
+    const searchInput = searchContainer
+      .append('input')
+      .attr('type', 'text')
+      .attr('placeholder', 'Search technologies...')
+      .style('padding', '0.5rem')
+      .style('border', '1px solid #cbd5e0')
+      .style('border-radius', '6px')
+      .style('width', '200px')
+      .on('input', function() {
+        const query = this.value.toLowerCase();
+        highlightSearchResults(query);
+      });
+  }
+
+  function highlightSearchResults(query) {
+    g.selectAll('.node-group')
+      .style('opacity', d => {
+        if (!query) return 1;
+
+        const searchableText = [
+          d.name,
+          d.description,
+          ...(d.technologies || []).map(t => typeof t === 'string' ? t : t.name),
+          ...(d.clusters || []).flatMap(c => c.technologies || [])
+        ].join(' ').toLowerCase();
+
+        return searchableText.includes(query) ? 1 : 0.3;
+      });
+  }
+
+  // Initialize search feature
+  addSearchFeature();
+
+  // Add print styles
+  const printStyles = `
+            @media print {
+                .controls, .search-container, .sidebar {
+                    display: none !important;
+                }
+
+                .roadmap-container {
+                    height: 100vh !important;
+                }
+
+                .header {
+                    position: static !important;
+                }
+
+                body {
+                    background: white !important;
+                }
+            }
+        `;
+
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = printStyles;
+  document.head.appendChild(styleSheet);
+
+  // Add touch gestures for mobile
+  let touchStartX, touchStartY;
+
+  svg.on('touchstart', function(event) {
+    if (event.touches.length === 1) {
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    }
+  });
+
+  svg.on('touchmove', function(event) {
+    event.preventDefault();
+  });
+
+  svg.on('touchend', function(event) {
+    if (event.changedTouches.length === 1) {
+      const touchEndX = event.changedTouches[0].clientX;
+      const touchEndY = event.changedTouches[0].clientY;
+
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+
+      // Simple swipe detection
+      if (Math.abs(deltaX) > 50 || Math.abs(deltaY) > 50) {
+        zoom.translateBy(svg, deltaX, deltaY);
+      }
+    }
+  });
+</script>
+</body>
+</html>

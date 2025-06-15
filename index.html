@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Engineering Skill Tree</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background: radial-gradient(circle at center, #0f0f23 0%, #050517 100%);
+          color: #e2e8f0;
+          overflow: hidden;
+          height: 100vh;
+      }
+
+      #container {
+          width: 100vw;
+          height: 100vh;
+          position: relative;
+      }
+
+      #skill-tree {
+          width: 100%;
+          height: 100%;
+      }
+
+      .ring {
+          fill: none;
+          stroke: rgba(255, 255, 255, 0.1);
+          stroke-width: 1;
+      }
+
+      .sector {
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+
+      .sector:hover {
+          filter: brightness(1.2);
+          stroke: rgba(255, 255, 255, 0.8);
+          stroke-width: 2;
+      }
+
+      .technology-node {
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+
+      .technology-node:hover {
+          filter: brightness(1.2);
+      }
+
+      .technology-node.selected {
+          filter: drop-shadow(0 0 12px rgba(99, 179, 237, 0.8));
+      }
+
+      .technology-text {
+          font-size: 10px;
+          font-weight: 500;
+          text-anchor: middle;
+          pointer-events: none;
+          fill: #f8fafc;
+          text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+      }
+
+      .ring-label {
+          font-size: 16px;
+          font-weight: 700;
+          text-anchor: middle;
+          fill: #cbd5e0;
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+      }
+
+      .sector-label {
+          font-size: 24px;
+          font-weight: 900;
+          text-anchor: middle;
+          fill: #f7fafc;
+          opacity: 0.4;
+          text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+      }
+
+      .cluster-group {
+          opacity: 0.8;
+      }
+
+      .cluster-background {
+          font-size: 36px;
+          fill: none;
+          /*stroke: rgba(255, 255, 255, 0.2);*/
+          stroke-width: 1;
+          stroke-dasharray: 3,3;
+      }
+
+      .cluster-label {
+          font-size: 9px;
+          font-weight: 600;
+          text-anchor: middle;
+          fill: #a0aec0;
+          text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+      }
+
+      .connection-line {
+          stroke: #fff;
+          stroke-width: 2;
+          fill: none;
+          opacity: 0.6;
+          stroke-dasharray: 5,5;
+          animation: dash 1s linear infinite;
+      }
+
+      @keyframes dash {
+          to {
+              stroke-dashoffset: -10;
+          }
+      }
+
+      .core-element {
+          fill: #2d3748;
+          stroke: #4a5568;
+          stroke-width: 3;
+      }
+
+      .core-text {
+          font-size: 12px;
+          font-weight: 700;
+          text-anchor: middle;
+          fill: #e2e8f0;
+          text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+      }
+
+      #tooltip {
+          position: absolute;
+          background: rgba(26, 32, 44, 0.95);
+          border: 1px solid #4a5568;
+          border-radius: 8px;
+          padding: 12px;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          max-width: 300px;
+          backdrop-filter: blur(8px);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      #tooltip h3 {
+          margin: 0 0 8px 0;
+          color: #63b3ed;
+          font-size: 16px;
+      }
+
+      #tooltip p {
+          margin: 0 0 6px 0;
+          font-size: 13px;
+          line-height: 1.4;
+      }
+
+      #tooltip .capabilities {
+          margin-top: 8px;
+      }
+
+      #tooltip .capability {
+          font-size: 12px;
+          color: #a0aec0;
+          margin: 2px 0;
+      }
+
+      .controls {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          z-index: 1000;
+          display: flex;
+          gap: 10px;
+      }
+
+      .control-btn {
+          background: rgba(26, 32, 44, 0.8);
+          border: 1px solid #4a5568;
+          color: #e2e8f0;
+          padding: 8px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 12px;
+          backdrop-filter: blur(4px);
+          transition: all 0.3s ease;
+      }
+
+      .control-btn:hover {
+          background: rgba(26, 32, 44, 0.95);
+          border-color: #63b3ed;
+      }
+
+      .legend {
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+          background: rgba(26, 32, 44, 0.8);
+          border: 1px solid #4a5568;
+          border-radius: 8px;
+          padding: 15px;
+          backdrop-filter: blur(8px);
+      }
+
+      .legend h4 {
+          margin: 0 0 10px 0;
+          color: #63b3ed;
+          font-size: 14px;
+      }
+
+      .legend-item {
+          display: flex;
+          align-items: center;
+          margin: 5px 0;
+          font-size: 12px;
+      }
+
+      .legend-color {
+          width: 16px;
+          height: 16px;
+          border-radius: 3px;
+          margin-right: 8px;
+      }
+  </style>
+</head>
+<body>
+<div id="container">
+  <div class="controls">
+    <button class="control-btn" id="reset-zoom">Reset View</button>
+    <button class="control-btn" id="toggle-labels">Toggle Labels</button>
+    <button class="control-btn" id="clear-selection">Clear Selection</button>
+  </div>
+
+  <svg id="skill-tree"></svg>
+
+  <div id="tooltip"></div>
+
+  <div class="legend">
+    <h4>Skill Areas</h4>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #1572b6;"></div>
+      <span>HTML</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #f7df1e;"></div>
+      <span>CSS</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: #e34f26;"></div>
+      <span>JavaScript</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Configuration
+  const config = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    centerX: window.innerWidth / 2,
+    centerY: window.innerHeight / 2,
+    coreRadius: 60,
+    ringWidth: 100,
+    ringGap: 40,
+    techNodeRadius: 15, // Increased for better clicking
+    sectorColors: {
+      HTML: '#1572b6',
+      CSS: '#f7df1e',
+      JavaScript: '#e34f26',
+      Foundation: '#2d3748'
+    },
+    showLabels: true,
+    selectedTech: null,
+    connectedTechs: new Set()
+  };
+
+  // Initialize SVG
+  const svg = d3.select('#skill-tree')
+    .attr('width', config.width)
+    .attr('height', config.height);
+
+  // Create main group with zoom behavior
+  const g = svg.append('g');
+  const connectionsLayer = g.append('g').attr('class', 'connections-layer');
+  const mainLayer = g.append('g').attr('class', 'main-layer');
+
+  const zoom = d3.zoom()
+    .scaleExtent([0.5, 3])
+    .on('zoom', (event) => {
+      g.attr('transform', event.transform);
+    });
+
+  svg.call(zoom);
+
+  // Tooltip
+  const tooltip = d3.select('#tooltip');
+
+  // Technology relationships for path creation
+  const techRelationships = {
+    // Core to Build Tools
+    'package.json': ['HTML5', 'CSS3', 'ES6+'],
+    'HTML5': ['Pug', 'Handlebars', 'EJS'],
+    'CSS3': ['Sass', 'PostCSS'],
+    'ES6+': ['Parcel', 'Vite', 'Webpack', 'TypeScript', 'Deno', 'Bun', 'SvelteKit'],
+    'node:fetch': ['Express', 'Koa', 'Fastify', 'Hono'],
+    'node:fs': ['11ty', 'Astro', 'Next.js', 'Nuxt'],
+    'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
+
+    // Build Tools to Application Layer
+    'Pug': ['Astro', '11ty'],
+    'Handlebars': ['11ty'],
+    // 'EJS': ['Express'],
+    'Sass': ['Flowbite'],/**/
+    'PostCSS': ['Tailwind', 'Flowbite'],
+    'Parcel': ['React', 'Vue', 'Svelte'],
+    'Vite': ['React', 'Vue', 'Svelte'],
+    'Webpack': ['React', 'Vue', 'Angular'],
+    'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
+    'Deno': ['Hono'],
+    'Bun': ['Hono'],
+
+    // Application Layer connections (same level)
+    'React': ['Next.js'],
+    'Vue': ['Nuxt'],
+    'SvelteKit': ['Svelte'],
+    'Tailwind': ['Flowbite'],
+    'Express': ['Pug', 'Handlebars', 'EJS']
+  };
+
+  // Store all technologies for easy lookup
+  let allTechnologies = new Map();
+
+  // Utility functions
+  function degreesToRadians(degrees) {
+    return degrees * Math.PI / 180;
+  }
+
+  function getArcPath(innerRadius, outerRadius, startAngle, endAngle) {
+    const arc = d3.arc()
+      .innerRadius(innerRadius)
+      .outerRadius(outerRadius)
+      .startAngle(degreesToRadians(startAngle))
+      .endAngle(degreesToRadians(endAngle));
+    return arc();
+  }
+
+  function getLabelPosition(radius, angle) {
+    const radian = degreesToRadians(angle);
+    return {
+      x: config.centerX + radius * Math.cos(radian - Math.PI / 2),
+      y: config.centerY + radius * Math.sin(radian - Math.PI / 2)
+    };
+  }
+
+  function getSectorColor(sectorName) {
+    const name = sectorName.toLowerCase();
+    if (name.includes('html') || name === 'html') return config.sectorColors.HTML;
+    if (name.includes('css') || name === 'css') return config.sectorColors.CSS;
+    if (name.includes('javascript') || name === 'javascript') return config.sectorColors.JavaScript;
+    if (name.includes('foundation') || name === 'foundation') return config.sectorColors.Foundation;
+    return '#666';
+  }
+
+  function wrapText(text, width) {
+    if (text.length <= width) return [text];
+    const words = text.split(' ');
+    if (words.length <= 1) return [text];
+
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+      if ((currentLine + word).length < width) {
+        currentLine += (currentLine ? ' ' : '') + word;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
+    });
+
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  }
+
+  // Data processing function
+  function processSkillTreeData(skillTreeData) {
+    const processedData = {
+      core: skillTreeData.core,
+      rings: []
+    };
+
+    skillTreeData.rings.forEach((ring, ringIndex) => {
+      const ringData = {
+        ...ring,
+        innerRadius: config.coreRadius + (ringIndex * (config.ringWidth + config.ringGap)) + config.ringGap,
+        outerRadius: config.coreRadius + ((ringIndex + 1) * config.ringWidth) + (ringIndex * config.ringGap) + config.ringGap,
+        sectors: []
+      };
+
+      const sectorAngle = 360 / Math.max(ring.sectors.length, 3);
+
+      ring.sectors.forEach((sector, sectorIndex) => {
+        const startAngle = sectorIndex * sectorAngle;
+        const endAngle = (sectorIndex + 1) * sectorAngle;
+
+        const sectorData = {
+          ...sector,
+          startAngle,
+          endAngle,
+          midAngle: startAngle + sectorAngle / 2,
+          color: getSectorColor(sector.name || sector.sectorType || 'HTML'),
+          technologies: [],
+          clusters: []
+        };
+
+        // Process direct technologies
+        if (sector.technologies) {
+          sector.technologies.forEach((tech, techIndex) => {
+            const techAngle = startAngle + (techIndex + 1) * (sectorAngle / (sector.technologies.length + 1));
+            const techRadius = ringData.innerRadius + (ringData.outerRadius - ringData.innerRadius) * 0.6;
+
+            const techData = {
+              ...tech,
+              angle: techAngle,
+              radius: techRadius,
+              position: getLabelPosition(techRadius, techAngle),
+              id: tech.name
+            };
+
+            sectorData.technologies.push(techData);
+            allTechnologies.set(tech.name, techData);
+          });
+        }
+
+        // Process clusters
+        if (sector.clusters) {
+          let totalTechs = 0;
+          sector.clusters.forEach(cluster => {
+            totalTechs += cluster.technologies.length;
+          });
+
+          let currentTechIndex = 0;
+          sector.clusters.forEach((cluster, clusterIndex) => {
+            const clusterStartAngle = startAngle + (currentTechIndex / totalTechs) * sectorAngle;
+            const clusterEndAngle = startAngle + ((currentTechIndex + cluster.technologies.length) / totalTechs) * sectorAngle;
+
+            const clusterData = {
+              ...cluster,
+              startAngle: clusterStartAngle,
+              endAngle: clusterEndAngle,
+              technologies: []
+            };
+
+            cluster.technologies.forEach((tech, techIndex) => {
+              const techAngle = clusterStartAngle + (techIndex + 0.5) * ((clusterEndAngle - clusterStartAngle) / cluster.technologies.length);
+              const techRadius = ringData.innerRadius + (ringData.outerRadius - ringData.innerRadius) * 0.6;
+
+              const techData = {
+                ...tech,
+                angle: techAngle,
+                radius: techRadius,
+                position: getLabelPosition(techRadius, techAngle),
+                cluster: cluster.name,
+                id: tech.name
+              };
+
+              clusterData.technologies.push(techData);
+              sectorData.technologies.push(techData);
+              allTechnologies.set(tech.name, techData);
+            });
+
+            sectorData.clusters.push(clusterData);
+            currentTechIndex += cluster.technologies.length;
+          });
+        }
+
+        ringData.sectors.push(sectorData);
+      });
+
+      processedData.rings.push(ringData);
+    });
+
+    return processedData;
+  }
+
+  // Connection functions
+  function drawConnection(tech1, tech2) {
+    const line = connectionsLayer.append('path')
+      .attr('class', 'connection-line')
+      .attr('d', d3.line()([
+        [tech1.position.x, tech1.position.y],
+        [tech2.position.x, tech2.position.y]
+      ]));
+  }
+
+  function clearConnections() {
+    connectionsLayer.selectAll('.connection-line').remove();
+    config.connectedTechs.clear();
+  }
+
+  function showRelatedTechnologies(tech) {
+    clearConnections();
+
+    const related = techRelationships[tech.name] || [];
+    related.forEach(relatedName => {
+      const relatedTech = allTechnologies.get(relatedName);
+      if (relatedTech) {
+        drawConnection(tech, relatedTech);
+        config.connectedTechs.add(relatedName);
+      }
+    });
+
+    // Also show reverse relationships
+    Object.entries(techRelationships).forEach(([parentName, children]) => {
+      if (children.includes(tech.name)) {
+        const parentTech = allTechnologies.get(parentName);
+        if (parentTech) {
+          drawConnection(parentTech, tech);
+          config.connectedTechs.add(parentName);
+        }
+      }
+    });
+  }
+
+  // Render functions
+  function renderCore(coreData) {
+    const coreGroup = mainLayer.append('g').attr('class', 'core-group');
+
+    // Core circle
+    coreGroup.append('circle')
+      .attr('cx', config.centerX)
+      .attr('cy', config.centerY)
+      .attr('r', config.coreRadius)
+      .attr('class', 'core-element')
+      .on('click', function(event) {
+        selectTechnology(coreData.technologies[0]);
+      })
+      .on('mouseover', function(event) {
+        showTooltip(event, coreData.technologies[0]);
+      })
+      .on('mouseout', hideTooltip);
+
+    // Core label
+    coreGroup.append('text')
+      .attr('x', config.centerX)
+      .attr('y', config.centerY)
+      .attr('class', 'core-text')
+      .text(coreData.technologies[0].name);
+
+    // Add core technology to map
+    const coretech = {
+      ...coreData.technologies[0],
+      position: { x: config.centerX, y: config.centerY },
+      id: coreData.technologies[0].name
+    };
+    allTechnologies.set(coreData.technologies[0].name, coretech);
+  }
+
+  function renderRings(ringsData) {
+    ringsData.forEach((ring, ringIndex) => {
+      const ringGroup = mainLayer.append('g').attr('class', `ring-group ring-${ringIndex}`);
+
+      // Ring outline
+      ringGroup.append('circle')
+        .attr('cx', config.centerX)
+        .attr('cy', config.centerY)
+        .attr('r', ring.outerRadius)
+        .attr('class', 'ring');
+
+      // Ring label
+      if (config.showLabels) {
+        ringGroup.append('text')
+          .attr('x', config.centerX)
+          .attr('y', config.centerY - ring.outerRadius - 15)
+          .attr('class', 'ring-label')
+          .text(ring.name);
+      }
+
+      // Render sectors
+      ring.sectors.forEach((sector, sectorIndex) => {
+        renderSector(ringGroup, sector, ring);
+      });
+    });
+  }
+
+  function renderSector(parent, sector, ring) {
+    const sectorGroup = parent.append('g').attr('class', `sector-group sector-${(sector.name || 'unknown').toLowerCase()}`);
+
+    // Sector arc
+    const arcPath = getArcPath(ring.innerRadius, ring.outerRadius, sector.startAngle, sector.endAngle);
+
+    sectorGroup.append('path')
+      .attr('d', arcPath)
+      .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
+      .attr('fill', sector.color)
+      .attr('fill-opacity', 0.3)
+      .attr('class', 'sector')
+      .on('mouseover', function(event) {
+        d3.select(this).attr('fill-opacity', 0.5);
+      })
+      .on('mouseout', function(event) {
+        d3.select(this).attr('fill-opacity', 0.3);
+      });
+
+    // Render clusters
+    if (sector.clusters) {
+      sector.clusters.forEach(cluster => {
+        renderCluster(sectorGroup, cluster, sector, ring);
+      });
+    }
+
+    // Render technologies
+    sector.technologies.forEach((tech, techIndex) => {
+      renderTechnology(sectorGroup, tech, sector);
+    });
+  }
+
+  function renderCluster(parent, cluster, sector, ring) {
+    const clusterGroup = parent.append('g').attr('class', 'cluster-group');
+
+    // Cluster background arc
+    const clusterArc = getArcPath(
+      ring.innerRadius + 5,
+      ring.outerRadius - 5,
+      cluster.startAngle * 1.002,
+      cluster.endAngle * 0.998
+    );
+
+    clusterGroup.append('path')
+      .attr('d', clusterArc)
+      .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
+      .attr('class', 'cluster-background')
+      .attr('stroke', sector.color)
+      .attr('stroke-opacity', 0.4);
+
+    // Cluster label
+    const midAngle = (cluster.startAngle + cluster.endAngle) / 2;
+    const labelPos = getLabelPosition(ring.innerRadius + 20, midAngle);
+
+    clusterGroup.append('text')
+      .attr('x', labelPos.x)
+      .attr('y', labelPos.y)
+      .attr('class', 'cluster-label')
+      .style('fill', sector.color)
+      .text(cluster.name);
+  }
+
+  function renderTechnology(parent, tech, sector) {
+    const techGroup = parent.append('g').attr('class', 'technology-group');
+
+    // Technology node
+    const node = techGroup.append('circle')
+      .attr('cx', tech.position.x)
+      .attr('cy', tech.position.y)
+      .attr('r', config.techNodeRadius)
+      .attr('fill', sector.color)
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2)
+      .attr('class', 'technology-node')
+      .attr('data-tech-id', tech.name)
+      .on('click', function(event) {
+        event.stopPropagation();
+        selectTechnology(tech);
+      })
+      .on('mouseover', function(event) {
+        d3.select(this).attr('r', config.techNodeRadius * 1.1);
+        showTooltip(event, tech);
+      })
+      .on('mouseout', function(event) {
+        d3.select(this).attr('r', config.techNodeRadius);
+        hideTooltip();
+      });
+
+    // Technology label
+    if (config.showLabels) {
+      const lines = wrapText(tech.name, 12);
+      lines.forEach((line, lineIndex) => {
+        techGroup.append('text')
+          .attr('x', tech.position.x)
+          .attr('y', tech.position.y + config.techNodeRadius + 12 + (lineIndex * 10))
+          .attr('class', 'technology-text')
+          .text(line);
+      });
+    }
+  }
+
+  // Selection and interaction functions
+  function selectTechnology(tech) {
+    // Clear previous selection
+    mainLayer.selectAll('.technology-node').classed('selected', false);
+
+    if (config.selectedTech && config.selectedTech.name === tech.name) {
+      // Deselect if clicking same tech
+      config.selectedTech = null;
+      clearConnections();
+      return;
+    }
+
+    // Select new technology
+    config.selectedTech = tech;
+    mainLayer.select(`[data-tech-id="${tech.name}"]`).classed('selected', true);
+
+    // Show related technologies
+    showRelatedTechnologies(tech);
+  }
+
+  function clearSelection() {
+    config.selectedTech = null;
+    mainLayer.selectAll('.technology-node').classed('selected', false);
+    clearConnections();
+  }
+
+  // Tooltip functions
+  function showTooltip(event, data) {
+    let content = `<h3>${data.name}</h3>`;
+
+    if (data.description) {
+      content += `<p>${data.description}</p>`;
+    }
+
+    if (data.capabilities && data.capabilities.length > 0) {
+      content += `<div class="capabilities">`;
+      content += `<strong>Key Features:</strong>`;
+      data.capabilities.forEach(cap => {
+        content += `<div class="capability">• ${cap}</div>`;
+      });
+      content += `</div>`;
+    }
+
+    if (data.extensions && data.extensions.length > 0) {
+      content += `<p><strong>File Extensions:</strong> ${data.extensions.join(', ')}</p>`;
+    }
+
+    // Show related technologies
+    const related = techRelationships[data.name];
+    if (related && related.length > 0) {
+      content += `<p><strong>Builds to:</strong> ${related.join(', ')}</p>`;
+    }
+
+    tooltip
+      .style('opacity', 1)
+      .html(content)
+      .style('left', (event.pageX + 10) + 'px')
+      .style('top', (event.pageY - 10) + 'px');
+  }
+
+  function hideTooltip() {
+    tooltip.style('opacity', 0);
+  }
+
+  // Control functions
+  function resetZoom() {
+    svg.transition()
+      .duration(750)
+      .call(zoom.transform, d3.zoomIdentity);
+  }
+
+  function toggleLabels() {
+    config.showLabels = !config.showLabels;
+    mainLayer.selectAll('.technology-text, .ring-label, .cluster-label')
+      .style('opacity', config.showLabels ? 1 : 0);
+  }
+
+  // Event listeners
+  d3.select('#reset-zoom').on('click', resetZoom);
+  d3.select('#toggle-labels').on('click', toggleLabels);
+  d3.select('#clear-selection').on('click', clearSelection);
+
+  // Click outside to clear selection
+  svg.on('click', function(event) {
+    if (event.target === this) {
+      clearSelection();
+    }
+  });
+
+  // Window resize handler
+  window.addEventListener('resize', () => {
+    config.width = window.innerWidth;
+    config.height = window.innerHeight;
+    config.centerX = config.width / 2;
+    config.centerY = config.height / 2;
+
+    svg.attr('width', config.width).attr('height', config.height);
+  });
+
+  // Main render function
+  function renderSkillTree(skillTreeData) {
+    // Clear existing content
+    mainLayer.selectAll('*').remove();
+    connectionsLayer.selectAll('*').remove();
+    allTechnologies.clear();
+
+    // Process the data
+    const processedData = processSkillTreeData(skillTreeData);
+
+    // Render from outside-in so inner rings appear on top
+    renderRings(processedData.rings.slice().reverse());
+    renderCore(processedData.core);
+  }
+
+
+
+    // Cleaned data with shorter names and proper structure
+    const webEngineeringSkillTree = {
+    metadata: {
+      title: "Web Engineering Skill Tree",
+      description: "RPG-style progression through web development complexity layers",
+      version: "1.0.0"
+    },
+
+    core: {
+      level: 0,
+      name: "Foundation",
+      description: "The absolute minimum - you can build anything starting here",
+      technologies: [{
+        name: "package.json",
+        description: "Node.js project manifest - defines scripts, dependencies, metadata",
+        capabilities: [
+          "Define npm scripts for any task",
+          "Manage dependencies with semantic versioning",
+          "Execute tools via npx without global installation",
+          "Configure project metadata and entry points"
+        ]
+      }]
+    },
+
+    rings: [
+      {
+        level: 1,
+        name: "Core Technologies",
+        description: "The fundamental building blocks of the web",
+        sectors: [
+          {
+            name: "HTML",
+            technologies: [
+              {
+                name: "HTML5",
+                extensions: [".html", ".htm"],
+                description: "Modern semantic markup for accessible, SEO-friendly documents",
+                capabilities: [
+                  "Document structure with semantic meaning",
+                  "Accessibility through proper element hierarchy",
+                  "SEO optimization via structured content",
+                  "Form validation and user input handling"
+                ]
+              }
+            ]
+          },
+          {
+            name: "CSS",
+            technologies: [
+              {
+                name: "CSS3",
+                extensions: [".css"],
+                description: "Flexbox, Grid, and responsive design systems",
+                capabilities: [
+                  "Complex layouts with Flexbox and CSS Grid",
+                  "Responsive design with media queries",
+                  "Custom properties (CSS variables) for theming",
+                  "Animations and transitions for user experience"
+                ]
+              }
+            ]
+          },
+          {
+            name: "JavaScript",
+            clusters: [
+              {
+                name: "ES6+",
+                technologies: [
+                  {
+                    name: "Browser APIs",
+                    description: "Native browser capabilities beyond basic DOM",
+                    capabilities: [
+                      "Geolocation, Local Storage, Service Workers",
+                      "Progressive Web App features",
+                      "WebGL for 3D graphics",
+                      "Web Components for reusable elements"
+                    ]
+                  },
+                  {
+                    name: "node:fetch",
+                    description: "Built-in Node.js HTTP client",
+                    capabilities: [
+                      "Server-side HTTP requests without dependencies",
+                      "Consistent API with browser fetch",
+                      "Built-in TypeScript definitions"
+                    ]
+                  },
+                  {
+                    name: "node:fs",
+                    description: "File system operations module",
+                    capabilities: [
+                      "Read/write files synchronously or asynchronously",
+                      "Directory traversal and manipulation",
+                      "File watching for development tools"
+                    ]
+                  },
+                  {
+                    name: "ES6+",
+                    extensions: [".js", ".mjs"],
+                    description: "Contemporary JavaScript with latest language features",
+                    capabilities: [
+                      "Async/await for non-blocking operations",
+                      "Modules (ESM) for code organization",
+                      "DOM manipulation and event handling",
+                      "Fetch API for network requests"
+                    ]
+                  },
+/*                  {
+                    name: "import.meta.*",
+                    description: "Module metadata and environment access",
+                    capabilities: [
+                      "Current module URL and file path resolution",
+                      "Environment detection in ESM modules",
+                      "Dynamic import capabilities"
+                    ]
+                  },
+                  {
+                    name: "process.*",
+                    description: "Node.js process information and control",
+                    capabilities: [
+                      "Environment variables access",
+                      "Command line arguments parsing",
+                      "Process lifecycle management"
+                    ]
+                  }*/
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        level: 2,
+        name: "Build Tools",
+        description: "Tools that process, optimize, and enhance core web technologies",
+        sectors: [
+          {
+            name: "HTML",
+            technologies: [
+              {
+                name: "Pug",
+                extensions: [".pug"],
+                description: "Clean, whitespace-sensitive templating",
+                capabilities: [
+                  "Dynamic content generation from data",
+                  "Reusable components and partials",
+                  "Logic-less templates for security",
+                  "Compile-time HTML optimization"
+                ]
+              },
+              {
+                name: "Handlebars",
+                extensions: [".hbs"],
+                description: "Logic-less templates with helpers",
+                capabilities: [
+                  "Template inheritance and partials",
+                  "Custom helper functions",
+                  "Build-time HTML optimization",
+                  "Server-side and client-side rendering"
+                ]
+              },
+              {
+                name: "EJS",
+                extensions: [".ejs"],
+                description: "Embedded JavaScript templating",
+                capabilities: [
+                  "JavaScript expressions in templates",
+                  "Include system for template composition",
+                  "Fast compilation and rendering",
+                  "Express.js integration"
+                ]
+              }
+            ]
+          },
+          {
+            name: "CSS",
+            technologies: [
+              {
+                name: "Sass",
+                extensions: [".scss", ".sass"],
+                description: "Industry standard CSS preprocessor",
+                capabilities: [
+                  "Variables and functions for DRY code",
+                  "Nested selectors for better organization",
+                  "Mixins for reusable style patterns",
+                  "Mathematical operations and color functions"
+                ]
+              },
+              {
+                name: "PostCSS",
+                description: "Post-processing CSS with JavaScript plugins",
+                capabilities: [
+                  "Autoprefixer for vendor prefix management",
+                  "CSS Modules for scoped styling",
+                  "Future CSS syntax via polyfills",
+                  "Custom transformations via plugins"
+                ]
+              }
+            ]
+          },
+          {
+            name: "JavaScript",
+            clusters: [
+              {
+                name: "Bundlers",
+                technologies: [
+                  {
+                    name: "Parcel",
+                    description: "Zero-configuration build tool",
+                    capabilities: [
+                      "Automatic dependency resolution",
+                      "Built-in dev server with hot reload",
+                      "Code splitting and lazy loading",
+                      "Asset optimization without config"
+                    ]
+                  },
+                  {
+                    name: "Vite",
+                    description: "Lightning-fast dev server with ESM",
+                    capabilities: [
+                      "Instant server start with native ESM",
+                      "Hot Module Replacement (HMR)",
+                      "Rollup-based production optimization",
+                      "Framework-agnostic architecture"
+                    ]
+                  },
+                  {
+                    name: "Webpack",
+                    description: "Highly configurable module bundler",
+                    capabilities: [
+                      "Advanced code splitting strategies",
+                      "Plugin ecosystem for any transformation",
+                      "Asset dependency graph management",
+                      "Production optimization features"
+                    ]
+                  },
+                  {
+                    name: "SvelteKit",
+                    description: "Svelte-powered full-stack framework",
+                    capabilities: [
+                      "File-based routing system",
+                      "Server-side rendering with hydration",
+                      "Zero-config TypeScript support",
+                      "Adapter system for any deployment target"
+                    ]
+                  },
+                  {
+                    name: "tsc",
+                    description: "TypeScript compiler",
+                    extensions: [".ts", ".tsx"],
+                    capabilities: [
+                      "Type checking and compilation to JavaScript",
+                      "Declaration file generation",
+                      "Project references for monorepos",
+                      "Watch mode for development"
+                    ]
+                  }
+                ]
+              },
+              {
+                name: "Runtimes",
+                technologies: [
+                  {
+                    name: "Deno",
+                    description: "Secure TypeScript runtime",
+                    capabilities: [
+                      "Built-in TypeScript support without compilation",
+                      "Secure by default with explicit permissions",
+                      "Standard library with modern APIs",
+                      "Built-in testing and formatting tools"
+                    ]
+                  },
+                  {
+                    name: "Bun",
+                    description: "Fast all-in-one JavaScript runtime",
+                    capabilities: [
+                      "Extremely fast package installation",
+                      "Built-in bundler and test runner",
+                      "Node.js compatibility with performance gains",
+                      "Native TypeScript execution"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        level: 3,
+        name: "Application Layer",
+        description: "Full-stack frameworks, production deployment, and specialized patterns",
+        sectors: [
+          {
+            name: "HTML",
+            technologies: [
+              { name: "Web Components" },
+              { name: "Web Assembly (WASM)" }
+            ]
+          },
+          {
+            name: "CSS",
+            technologies: [
+              {
+                name: "Tailwind",
+                description: "Utility-first CSS framework",
+                capabilities: [
+                  "Rapid prototyping with utility classes",
+                  "Consistent design system with design tokens",
+                  "Automatic CSS purging for production",
+                  "Component extraction patterns"
+                ]
+              },
+              { name: "Bootstrap" },
+              { name: "ShadCN" },
+              { name: "Material Design Lite" },
+              {
+                name: "Flowbite",
+                description: "Tailwind CSS component library",
+                capabilities: [
+                  "Pre-built components with Tailwind classes",
+                  "Accessibility-first design patterns",
+                  "Customizable design tokens system",
+                  "Framework integrations available"
+                ]
+              }
+            ]
+          },
+          {
+            name: "JavaScript",
+            clusters: [
+              {
+                name: "Frontend",
+                technologies: [
+                  {
+                    name: "React",
+                    extensions: [".jsx", ".tsx"],
+                    description: "Component-based UI library with virtual DOM",
+                    capabilities: [
+                      "Virtual DOM for efficient updates",
+                      "Unidirectional data flow pattern",
+                      "Rich ecosystem of libraries and tools",
+                      "Concurrent features for performance"
+                    ]
+                  },
+                  {
+                    name: "Vue",
+                    extensions: [".vue"],
+                    description: "Progressive framework with template syntax",
+                    capabilities: [
+                      "Template-based syntax with optional JSX",
+                      "Reactive data binding with Composition API",
+                      "Component-based architecture",
+                      "Gradual adoption strategy"
+                    ]
+                  },
+                  {
+                    name: "Angular",
+                    extensions: [".ts"],
+                    description: "Full-featured framework with TypeScript",
+                    capabilities: [
+                      "Dependency injection system",
+                      "Two-way data binding with RxJS",
+                      "CLI tooling for project scaffolding",
+                      "Enterprise-ready architecture patterns"
+                    ]
+                  },
+                  {
+                    name: "Svelte",
+                    extensions: [".svelte"],
+                    description: "Compile-time framework with no runtime",
+                    capabilities: [
+                      "No runtime overhead with compile-time optimization",
+                      "Built-in state management and reactivity",
+                      "Smooth animations with built-in transitions",
+                      "Small bundle sizes"
+                    ]
+                  }
+                ]
+              },
+              {
+                name: "Backend",
+                technologies: [
+                  {
+                    name: "Express",
+                    description: "Minimal web framework for Node.js",
+                    capabilities: [
+                      "Middleware-based request processing",
+                      "Flexible routing system",
+                      "Template engine integration",
+                      "Large ecosystem of plugins"
+                    ]
+                  },
+                  {
+                    name: "Koa",
+                    description: "Next-generation web framework by Express team",
+                    capabilities: [
+                      "Async/await by default",
+                      "Context object for request/response",
+                      "Lightweight core with middleware composition",
+                      "Better error handling"
+                    ]
+                  },
+                  {
+                    name: "Fastify",
+                    description: "Fast and low overhead web framework",
+                    capabilities: [
+                      "JSON schema validation built-in",
+                      "High performance with minimal overhead",
+                      "Plugin architecture for extensibility",
+                      "TypeScript support out of the box"
+                    ]
+                  },
+                  {
+                    name: "Hono",
+                    description: "Ultrafast web framework for edge environments",
+                    capabilities: [
+                      "Edge runtime compatibility (Cloudflare Workers, Deno)",
+                      "TypeScript-first development experience",
+                      "Minimal dependencies and small footprint",
+                      "Express-like API design"
+                    ]
+                  }
+                ]
+              },
+              {
+                name: "SSR/SSG",
+                technologies: [
+                  {
+                    name: "Astro",
+                    description: "Multi-framework static site generator",
+                    capabilities: [
+                      "Build-time content generation with any framework",
+                      "Component islands architecture for selective hydration",
+                      "Framework-agnostic development approach",
+                      "Automatic performance optimization"
+                    ]
+                  },
+                  {
+                    name: "11ty",
+                    description: "Simple, flexible static site generator",
+                    capabilities: [
+                      "Multiple template languages support",
+                      "Data-driven site generation from any source",
+                      "Extensible plugin ecosystem",
+                      "Zero-config deployment ready"
+                    ]
+                  },
+                  {
+                    name: "Next.js",
+                    description: "React-based full-stack framework",
+                    capabilities: [
+                      "Server-side rendering and static generation",
+                      "API routes for backend functionality",
+                      "Automatic code splitting and optimization",
+                      "Built-in performance monitoring"
+                    ]
+                  },
+                  {
+                    name: "Nuxt",
+                    description: "Vue.js-based full-stack framework",
+                    capabilities: [
+                      "Universal rendering with Vue.js",
+                      "Auto-generated routing from file structure",
+                      "Module ecosystem for functionality",
+                      "Static site generation capabilities"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+    // Initialize the visualization
+    renderSkillTree(webEngineeringSkillTree);
+  </script>
+  </body>
+</html>

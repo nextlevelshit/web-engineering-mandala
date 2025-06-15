@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Engineering Learning Path</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+        
+        #diagram {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            background: #333;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .control-btn:hover {
+            background: #444;
+        }
+        
+        .control-btn.active {
+            background: #e74c3c;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #1a1a1a;
+            border-radius: 12px;
+        }
+        
+        .legend-section h3 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .pathway-explanation {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            line-height: 1.6;
+        }
+        
+        .pathway-explanation h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .skill-level {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid;
+        }
+        
+        .skill-level.foundation { border-left-color: #3498db; }
+        .skill-level.tooling { border-left-color: #f39c12; }
+        .skill-level.framework { border-left-color: #e74c3c; }
+        .skill-level.advanced { border-left-color: #9b59b6; }
+        
+        .skill-level h4 {
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .skill-level ul {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: #ccc;
+        }
+        
+        .skill-level li {
+            margin-bottom: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Web Engineering Learning Journey</h1>
+        <p class="subtitle">Interactive dependency graph showing prerequisite knowledge and skill progression</p>
+        
+        <div class="controls">
+            <button class="control-btn active" data-view="all">Complete Path</button>
+            <button class="control-btn" data-view="frontend">Frontend Focus</button>
+            <button class="control-btn" data-view="backend">Backend Focus</button>
+            <button class="control-btn" data-view="tooling">Build Tools</button>
+        </div>
+        
+        <div id="diagram"></div>
+        
+        <div class="legend">
+            <div class="legend-section">
+                <h3>Node Types</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Foundation Skills</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f39c12;"></div>
+                    <span>Build Tools</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e74c3c;"></div>
+                    <span>Frameworks</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9b59b6;"></div>
+                    <span>Advanced/Specialized</span>
+                </div>
+            </div>
+            
+            <div class="legend-section">
+                <h3>Connection Types</h3>
+                <div class="legend-item">
+                    <div style="width: 20px; height: 2px; background: #27ae60;"></div>
+                    <span>Strong prerequisite</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 20px; height: 2px; background: #f1c40f; opacity: 0.7;"></div>
+                    <span>Helpful to know</span>
+                </div>
+                <div class="legend-item">
+                    <div style="width: 20px; height: 2px; background: #e67e22; opacity: 0.5;"></div>
+                    <span>Related skill</span>
+                </div>
+            </div>
+            
+            <div class="legend-section">
+                <h3>Technology Domains</h3>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(52, 152, 219, 0.3);"></div>
+                    <span>HTML/Markup</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(26, 188, 156, 0.3);"></div>
+                    <span>CSS/Styling</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(231, 76, 60, 0.3);"></div>
+                    <span>JavaScript/Logic</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pathway-explanation">
+            <h3>Understanding the Learning Path</h3>
+            <p>This diagram shows the actual dependencies between web development skills. <strong>Follow the arrows</strong> to understand what you need to learn first. The thickness and color of connections indicate how strongly one skill depends on another.</p>
+            
+            <div class="skills-grid">
+                <div class="skill-level foundation">
+                    <h4>Foundation (Start Here)</h4>
+                    <ul>
+                        <li>package.json - Dependency management</li>
+                        <li>HTML semantics - Document structure</li>
+                        <li>CSS basics - Styling fundamentals</li>
+                        <li>JavaScript core - Programming logic</li>
+                        <li>Git - Version control</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-level tooling">
+                    <h4>Tooling (Build Pipeline)</h4>
+                    <ul>
+                        <li>npm/yarn - Package management</li>
+                        <li>Vite/Parcel - Fast development</li>
+                        <li>TypeScript - Type safety</li>
+                        <li>ESLint/Prettier - Code quality</li>
+                        <li>PostCSS/Sass - CSS preprocessing</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-level framework">
+                    <h4>Frameworks (Application Layer)</h4>
+                    <ul>
+                        <li>React/Vue/Svelte - UI libraries</li>
+                        <li>Express/Fastify - Backend frameworks</li>
+                        <li>Next.js/Nuxt - Full-stack frameworks</li>
+                        <li>Tailwind - Utility-first CSS</li>
+                        <li>Testing frameworks</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-level advanced">
+                    <h4>Advanced (Specialization)</h4>
+                    <ul>
+                        <li>Web Components - Standards-based</li>
+                        <li>Performance optimization</li>
+                        <li>Accessibility (WCAG)</li>
+                        <li>Progressive Web Apps</li>
+                        <li>Server-side rendering</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+        import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+        // Define the learning graph with actual dependencies
+        const learningGraph = {
+            nodes: [
+                // Foundation (Level 0)
+                { id: 'package.json', name: 'package.json', level: 0, type: 'foundation', domain: 'core', complexity: 1 },
+                { id: 'html', name: 'HTML Semantics', level: 0, type: 'foundation', domain: 'html', complexity: 2 },
+                { id: 'css', name: 'CSS Basics', level: 0, type: 'foundation', domain: 'css', complexity: 2 },
+                { id: 'js', name: 'JavaScript Core', level: 0, type: 'foundation', domain: 'js', complexity: 3 },
+                { id: 'git', name: 'Git/Version Control', level: 0, type: 'foundation', domain: 'core', complexity: 2 },
+                
+                // Tooling (Level 1)
+                { id: 'npm', name: 'npm/yarn', level: 1, type: 'tooling', domain: 'core', complexity: 2 },
+                { id: 'vite', name: 'Vite', level: 1, type: 'tooling', domain: 'js', complexity: 2 },
+                { id: 'parcel', name: 'Parcel', level: 1, type: 'tooling', domain: 'js', complexity: 2 },
+                { id: 'typescript', name: 'TypeScript', level: 1, type: 'tooling', domain: 'js', complexity: 3 },
+                { id: 'eslint', name: 'ESLint/Prettier', level: 1, type: 'tooling', domain: 'js', complexity: 2 },
+                { id: 'postcss', name: 'PostCSS', level: 1, type: 'tooling', domain: 'css', complexity: 2 },
+                { id: 'sass', name: 'Sass/SCSS', level: 1, type: 'tooling', domain: 'css', complexity: 2 },
+                
+                // Frameworks (Level 2)
+                { id: 'react', name: 'React', level: 2, type: 'framework', domain: 'js', complexity: 4 },
+                { id: 'vue', name: 'Vue', level: 2, type: 'framework', domain: 'js', complexity: 4 },
+                { id: 'svelte', name: 'Svelte', level: 2, type: 'framework', domain: 'js', complexity: 3 },
+                { id: 'express', name: 'Express', level: 2, type: 'framework', domain: 'js', complexity: 3 },
+                { id: 'fastify', name: 'Fastify', level: 2, type: 'framework', domain: 'js', complexity: 3 },
+                { id: 'tailwind', name: 'Tailwind CSS', level: 2, type: 'framework', domain: 'css', complexity: 3 },
+                { id: 'testing', name: 'Jest/Vitest', level: 2, type: 'framework', domain: 'js', complexity: 3 },
+                
+                // Advanced (Level 3)
+                { id: 'nextjs', name: 'Next.js', level: 3, type: 'advanced', domain: 'js', complexity: 5 },
+                { id: 'nuxt', name: 'Nuxt', level: 3, type: 'advanced', domain: 'js', complexity: 5 },
+                { id: 'sveltekit', name: 'SvelteKit', level: 3, type: 'advanced', domain: 'js', complexity: 4 },
+                { id: 'webcomponents', name: 'Web Components', level: 3, type: 'advanced', domain: 'html', complexity: 4 },
+                { id: 'accessibility', name: 'WCAG/a11y', level: 3, type: 'advanced', domain: 'html', complexity: 4 },
+                { id: 'performance', name: 'Performance', level: 3, type: 'advanced', domain: 'core', complexity: 5 },
+                { id: 'pwa', name: 'Progressive Web Apps', level: 3, type: 'advanced', domain: 'js', complexity: 5 }
+            ],
+            
+            // Dependencies: [source, target, strength, type]
+            // strength: 1=required, 0.7=helpful, 0.4=related
+            edges: [
+                // Foundation dependencies
+                ['package.json', 'npm', 1, 'required'],
+                ['html', 'css', 0.7, 'helpful'],
+                ['css', 'js', 0.4, 'related'],
+                ['js', 'typescript', 1, 'required'],
+                ['js', 'eslint', 1, 'required'],
+                ['js', 'testing', 1, 'required'],
+                
+                // Tooling to frameworks
+                ['npm', 'vite', 1, 'required'],
+                ['npm', 'parcel', 1, 'required'],
+                ['js', 'react', 1, 'required'],
+                ['js', 'vue', 1, 'required'],
+                ['js', 'svelte', 1, 'required'],
+                ['js', 'express', 1, 'required'],
+                ['js', 'fastify', 1, 'required'],
+                ['css', 'tailwind', 1, 'required'],
+                ['css', 'postcss', 0.7, 'helpful'],
+                ['css', 'sass', 0.7, 'helpful'],
+                
+                // Framework to advanced
+                ['react', 'nextjs', 1, 'required'],
+                ['vue', 'nuxt', 1, 'required'],
+                ['svelte', 'sveltekit', 1, 'required'],
+                ['html', 'webcomponents', 1, 'required'],
+                ['html', 'accessibility', 1, 'required'],
+                ['vite', 'performance', 0.7, 'helpful'],
+                ['js', 'pwa', 1, 'required'],
+                
+                // Cross-dependencies
+                ['typescript', 'react', 0.7, 'helpful'],
+                ['typescript', 'vue', 0.7, 'helpful'],
+                ['vite', 'react', 0.7, 'helpful'],
+                ['vite', 'vue', 0.7, 'helpful'],
+                ['tailwind', 'react', 0.4, 'related'],
+                ['testing', 'react', 0.7, 'helpful'],
+                ['git', 'vite', 0.4, 'related']
+            ]
+        };
+
+        // Color schemes
+        const colors = {
+            foundation: '#3498db',
+            tooling: '#f39c12', 
+            framework: '#e74c3c',
+            advanced: '#9b59b6',
+            html: 'rgba(52, 152, 219, 0.15)',
+            css: 'rgba(26, 188, 156, 0.15)',
+            js: 'rgba(231, 76, 60, 0.15)',
+            core: 'rgba(149, 165, 166, 0.15)'
+        };
+
+        // Create force simulation layout
+        function createLayout(nodes, edges, width = 1200, height = 800) {
+            const simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(edges).id(d => d.id).distance(d => 60 + d.strength * 40))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('collision', d3.forceCollide().radius(d => 20 + d.complexity * 4))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('y', d3.forceY().y(d => height * 0.2 + d.level * (height * 0.6 / 3)).strength(0.3));
+
+            // Run simulation
+            for (let i = 0; i < 200; ++i) simulation.tick();
+            
+            return { nodes, edges };
+        }
+
+        // Transform edges to include source/target objects
+        const edgeData = learningGraph.edges.map(([source, target, strength, type]) => ({
+            source: learningGraph.nodes.find(n => n.id === source),
+            target: learningGraph.nodes.find(n => n.id === target),
+            strength,
+            type
+        }));
+
+        const { nodes, edges } = createLayout([...learningGraph.nodes], edgeData);
+
+        // Create the plot
+        function createDiagram(viewFilter = 'all') {
+            let filteredNodes = nodes;
+            let filteredEdges = edges;
+            
+            // Apply view filter
+            if (viewFilter === 'frontend') {
+                filteredNodes = nodes.filter(n => 
+                    n.domain === 'html' || n.domain === 'css' || n.domain === 'js' || 
+                    ['package.json', 'git', 'npm', 'vite', 'react', 'vue', 'svelte', 'tailwind', 'nextjs'].includes(n.id)
+                );
+            } else if (viewFilter === 'backend') {
+                filteredNodes = nodes.filter(n => 
+                    n.domain === 'js' || n.domain === 'core' || 
+                    ['express', 'fastify', 'testing', 'performance'].includes(n.id)
+                );
+            } else if (viewFilter === 'tooling') {
+                filteredNodes = nodes.filter(n => 
+                    n.type === 'tooling' || n.type === 'foundation' || 
+                    ['testing', 'performance'].includes(n.id)
+                );
+            }
+            
+            const nodeIds = new Set(filteredNodes.map(n => n.id));
+            filteredEdges = edges.filter(e => 
+                nodeIds.has(e.source.id) && nodeIds.has(e.target.id)
+            );
+
+            return Plot.plot({
+                width: 1200,
+                height: 800,
+                style: {
+                    background: 'transparent',
+                    overflow: 'visible'
+                },
+                marks: [
+                    // Domain backgrounds
+                    Plot.circle(filteredNodes, {
+                        x: 'x',
+                        y: 'y', 
+                        r: d => 35 + d.complexity * 8,
+                        fill: d => colors[d.domain],
+                        stroke: 'none',
+                        opacity: 0.3
+                    }),
+                    
+                    // Dependency arrows
+                    Plot.arrow(filteredEdges, {
+                        x1: d => d.source.x,
+                        y1: d => d.source.y,
+                        x2: d => d.target.x,
+                        y2: d => d.target.y,
+                        stroke: d => d.strength > 0.8 ? '#27ae60' : d.strength > 0.6 ? '#f1c40f' : '#e67e22',
+                        strokeWidth: d => 1 + d.strength * 3,
+                        strokeOpacity: d => 0.4 + d.strength * 0.4,
+                        bend: 15
+                    }),
+                    
+                    // Technology nodes
+                    Plot.circle(filteredNodes, {
+                        x: 'x',
+                        y: 'y',
+                        r: d => 15 + d.complexity * 3,
+                        fill: d => colors[d.type],
+                        stroke: '#fff',
+                        strokeWidth: 2,
+                        opacity: 0.9
+                    }),
+                    
+                    // Labels
+                    Plot.text(filteredNodes, {
+                        x: d => d.x,
+                        y: d => d.y - (20 + d.complexity * 3),
+                        text: 'name',
+                        fill: '#fff',
+                        fontSize: d => Math.max(10, 14 - d.level),
+                        fontWeight: d => d.level === 0 ? 'bold' : 'normal',
+                        textAnchor: 'middle',
+                        stroke: '#000',
+                        strokeWidth: 3,
+                        paintOrder: 'stroke'
+                    }),
+                    
+                    // Complexity indicators
+                    Plot.text(filteredNodes.filter(d => d.complexity > 3), {
+                        x: d => d.x + (15 + d.complexity * 3),
+                        y: d => d.y - (15 + d.complexity * 3),
+                        text: d => '★'.repeat(d.complexity - 3),
+                        fill: '#f1c40f',
+                        fontSize: 10,
+                        textAnchor: 'start'
+                    })
+                ]
+            });
+        }
+
+        // Initial render
+        let currentView = 'all';
+        const diagramContainer = document.getElementById('diagram');
+        
+        function updateDiagram() {
+            diagramContainer.innerHTML = '';
+            diagramContainer.appendChild(createDiagram(currentView));
+        }
+        
+        updateDiagram();
+
+        // Control buttons
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentView = btn.dataset.view;
+                updateDiagram();
+            });
+        });
+    </script>
+</body>
+</html>
