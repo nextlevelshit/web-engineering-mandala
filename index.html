@@ -17,7 +17,7 @@
           background: radial-gradient(circle at center, #0f0f23 0%, #050517 100%);
           color: #e2e8f0;
           overflow: hidden;
-          height: 100vh;
+          min-height: 100vh;
       }
 
       #container {
@@ -44,8 +44,8 @@
 
       .sector:hover {
           filter: brightness(1.2);
-          stroke: rgba(255, 255, 255, 0.8);
-          stroke-width: 2;
+          /*stroke: rgba(255, 255, 255, 0.8);*/
+          stroke-width: 3;
       }
 
       .technology-node {
@@ -62,8 +62,9 @@
       }
 
       .technology-text {
-          font-size: 22px;
-          font-weight: 500;
+          font-size: 20px;
+          line-height: 24px;
+          font-weight: 800;
           text-anchor: middle;
           pointer-events: none;
           fill: #f8fafc;
@@ -71,10 +72,10 @@
       }
 
       .ring-label {
-          font-size: 16px;
+          font-size: 24px;
           font-weight: 700;
           text-anchor: middle;
-          fill: #cbd5e0;
+          fill: #dce3ea;
           text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
       }
 
@@ -94,9 +95,9 @@
       .cluster-background {
           font-size: 36px;
           fill: none;
-          /*stroke: rgba(255, 255, 255, 0.2);*/
-          stroke-width: 1;
-          stroke-dasharray: 3,3;
+          /*stroke: rgba(255, 255, 255, 1);*/
+          stroke-width: 2;
+          /*stroke-dasharray: 8,5;*/
       }
 
       .cluster-label {
@@ -108,12 +109,14 @@
       }
 
       .connection-line {
-          stroke: #fff;
-          stroke-width: 2;
+          filter: brightness(1.2);
+          stroke: currentColor;
+          stroke-width: 6;
           fill: none;
-          opacity: 0.6;
+          opacity: 0.7;
           stroke-dasharray: 5,5;
           animation: dash 1s linear infinite;
+          animation-direction: reverse;
       }
 
       @keyframes dash {
@@ -129,8 +132,8 @@
       }
 
       .core-text {
-          font-size: 12px;
-          font-weight: 700;
+          font-size: 32px;
+          font-weight: 800;
           text-anchor: middle;
           fill: #e2e8f0;
           text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
@@ -240,11 +243,11 @@
       }
 
       .file-extension {
-          font-size: 14px;
-          font-weight: 600;
+          font-size: 18px;
+          font-weight: 400;
           text-anchor: middle;
-          fill: #94a3b8;
-          text-shadow: 0 0 2px rgba(0, 0, 0, 0.9);
+          fill: rgba(255, 255, 255, 0.9);
+          /*text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);*/
           pointer-events: none;
       }
 
@@ -324,37 +327,6 @@
 
   // Tooltip
   const tooltip = d3.select('#tooltip');
-
-  // Technology relationships for path creation
-  const techRelationships = {
-    // Core to Build Tools
-    'package.json': ['HTML5', 'CSS3', 'ES6+'],
-    'HTML5': ['Pug', 'Handlebars', 'EJS'],
-    'CSS3': ['Sass', 'PostCSS'],
-    'ES6+': ['Parcel', 'Vite', 'TypeScript', 'Deno', 'Bun', 'SvelteKit'],
-    'node:fetch': ['Express', 'Koa', 'Fastify', 'Hono'],
-    'node:fs': ['11ty', 'Astro', 'Next.js', 'Nuxt'],
-    'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
-
-    // Build Tools to Application Layer
-    'Pug': ['Astro', '11ty'],
-    'Handlebars': ['11ty'],
-    // 'EJS': ['Express'],
-    'Sass': ['Flowbite'],/**/
-    'PostCSS': ['Tailwind', 'Flowbite'],
-    'Parcel': ['React', 'Vue', 'Svelte'],
-    'Vite': ['React', 'Vue', 'Svelte'],
-    'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
-    'Deno': ['Hono'],
-    'Bun': ['Hono'],
-
-    // Application Layer connections (same level)
-    'React': ['Next.js'],
-    'Vue': ['Nuxt'],
-    'SvelteKit': ['Svelte'],
-    'Tailwind': ['Flowbite'],
-    'Express': ['Pug', 'Handlebars', 'EJS']
-  };
 
   // Store all technologies for easy lookup
   let allTechnologies = new Map();
@@ -600,7 +572,7 @@
       if (config.showLabels) {
         ringGroup.append('text')
           .attr('x', config.centerX)
-          .attr('y', config.centerY - ring.outerRadius - 15)
+          .attr('y', config.centerY - ring.outerRadius - 34)
           .attr('class', 'ring-label')
           .text(ring.name);
       }
@@ -630,13 +602,14 @@
       .attr('d', arcPath)
       .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
       .attr('fill', sector.color)
-      .attr('fill-opacity', 0.3)
+      .attr('stroke', sector.color)
+      .attr('fill-opacity', 0.5)
       .attr('class', 'sector')
       .on('mouseover', function(event) {
-        d3.select(this).attr('fill-opacity', 0.5);
+        d3.select(this).attr('fill-opacity', 0.3).str;
       })
       .on('mouseout', function(event) {
-        d3.select(this).attr('fill-opacity', 0.3);
+        d3.select(this).attr('fill-opacity', 0.5).str;
       });
 
     // Render clusters
@@ -657,10 +630,10 @@
 
     // Cluster background arc
     const clusterArc = getArcPath(
-      ring.innerRadius + 5,
-      ring.outerRadius - 5,
-      cluster.startAngle * 1.002,
-      cluster.endAngle * 0.998
+      ring.innerRadius,
+      ring.outerRadius,
+      cluster.startAngle,
+      cluster.endAngle
     );
 
     clusterGroup.append('path')
@@ -708,17 +681,18 @@
         hideTooltip();
       });
 
-    // Render file extensions in orbit around technology node
+    // Render file extensions in upper arc around technology node
     if (tech.extensions && tech.extensions.length > 0) {
-      const extRadius = config.techNodeRadius + 22; // Distance from tech center
-      const angleStep = (Math.PI * 2) / tech.extensions.length;
+      const extRadius = config.techNodeRadius + 28;
+      const arcSpan = Math.PI; // Upper semicircle (180 degrees)
+      const startAngle = 0; // Start at right (3 o'clock)
+      const angleStep = -arcSpan / (tech.extensions.length - 1 || 1); // Negative to go counterclockwise
 
       tech.extensions.forEach((ext, index) => {
-        const angle = index * angleStep - Math.PI / 2; // Start at top
+        const angle = startAngle + (index * angleStep);
         const extX = tech.position.x + Math.cos(angle) * extRadius;
         const extY = tech.position.y + Math.sin(angle) * extRadius + 6;
 
-        // Scale font size based on zoom level and number of extensions
         const fontClass = tech.extensions.length > 3 ? 'file-extension file-extension-small' : 'file-extension';
 
         techGroup.append('text')
@@ -856,7 +830,36 @@
     renderCore(processedData.core);
   }
 
+  // Technology relationships for path creation
+  const techRelationships = {
+    // Core to Build Tools
+    'package.json': ['HTML5', 'CSS3', 'JavaScript'],
+    'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
+    'CSS3': ['Sass', 'PostCSS'],
+    'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
+    'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
+    'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
+    'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
 
+    // Build Tools to Application Layer
+    // 'Pug': ['Astro'],
+    // 'Handlebars': ['11ty'],
+    // 'EJS': ['Express'],
+    // 'Sass': ['Flowbite'],
+    'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
+    'Parcel': ['React', 'Vue', 'Svelte'],
+    'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
+    // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
+    'Deno': ['Hono'],
+    'Bun': ['Hono'],
+
+    // Application Layer connections (same level)
+    'React': ['Next.js'],
+    'Vue': ['Nuxt'],
+    'SvelteKit': ['Svelte'],
+    'Tailwind': ['Flowbite'],
+    'Express': ['Pug', 'Handlebars', 'EJS']
+  };
 
     // Cleaned data with shorter names and proper structure
   const webEngineeringSkillTree = {
@@ -922,49 +925,16 @@
           },
           {
             name: "JavaScript",
-            clusters: [
+            technologies: [
               {
-                name: "ES6+",
-                technologies: [
-                  {
-                    name: "Browser APIs",
-                    description: "Native browser capabilities beyond basic DOM",
-                    capabilities: [
-                      "Geolocation, Local Storage, Service Workers",
-                      "Progressive Web App features",
-                      "WebGL for 3D graphics",
-                      "Web Components for reusable elements"
-                    ]
-                  },
-                  {
-                    name: "node:fetch",
-                    description: "Built-in Node.js HTTP client",
-                    capabilities: [
-                      "Server-side HTTP requests without dependencies",
-                      "Consistent API with browser fetch",
-                      "Built-in TypeScript definitions"
-                    ]
-                  },
-                  {
-                    name: "node:fs",
-                    description: "File system operations module",
-                    capabilities: [
-                      "Read/write files synchronously or asynchronously",
-                      "Directory traversal and manipulation",
-                      "File watching for development tools"
-                    ]
-                  },
-                  {
-                    name: "ES6+",
-                    extensions: [".js", ".mjs", ".cjs"],
-                    description: "Contemporary JavaScript with latest language features",
-                    capabilities: [
-                      "Async/await for non-blocking operations",
-                      "Modules (ESM) for code organization",
-                      "DOM manipulation and event handling",
-                      "Fetch API for network requests"
-                    ]
-                  }
+                name: "JavaScript",
+                extensions: [".js", ".mjs", ".cjs"],
+                description: "Contemporary JavaScript with latest language features",
+                capabilities: [
+                  "Async/await for non-blocking operations",
+                  "Modules (ESM) for code organization",
+                  "DOM manipulation and event handling",
+                  "Fetch API for network requests"
                 ]
               }
             ]
@@ -979,66 +949,79 @@
         sectors: [
           {
             name: "HTML",
-            technologies: [
+            clusters: [
               {
-                name: "Pug",
-                extensions: [".pug"],
-                description: "Clean, whitespace-sensitive templating",
-                capabilities: [
-                  "Dynamic content generation from data",
-                  "Reusable components and partials",
-                  "Logic-less templates for security",
-                  "Compile-time HTML optimization"
-                ]
-              },
-              {
-                name: "Handlebars",
-                extensions: [".hbs"],
-                description: "Logic-less templates with helpers",
-                capabilities: [
-                  "Template inheritance and partials",
-                  "Custom helper functions",
-                  "Build-time HTML optimization",
-                  "Server-side and client-side rendering"
-                ]
-              },
-              {
-                name: "EJS",
-                extensions: [".ejs"],
-                description: "Embedded JavaScript templating",
-                capabilities: [
-                  "JavaScript expressions in templates",
-                  "Include system for template composition",
-                  "Fast compilation and rendering",
-                  "Express.js integration"
+                name: "Template Engines",
+                technologies: [
+                  {
+                    name: "Nunjucks",
+                    extensions: [".nks"]
+                  },
+                  {
+                    name: "Pug",
+                    extensions: [".pug"],
+                    description: "Clean, whitespace-sensitive templating",
+                    capabilities: [
+                      "Dynamic content generation from data",
+                      "Reusable components and partials",
+                      "Logic-less templates for security",
+                      "Compile-time HTML optimization"
+                    ]
+                  },
+                  {
+                    name: "Handlebars",
+                    extensions: [".hbs"],
+                    description: "Logic-less templates with helpers",
+                    capabilities: [
+                      "Template inheritance and partials",
+                      "Custom helper functions",
+                      "Build-time HTML optimization",
+                      "Server-side and client-side rendering"
+                    ]
+                  },
+                  {
+                    name: "EJS",
+                    extensions: [".ejs"],
+                    description: "Embedded JavaScript templating",
+                    capabilities: [
+                      "JavaScript expressions in templates",
+                      "Include system for template composition",
+                      "Fast compilation and rendering",
+                      "Express.js integration"
+                    ]
+                  }
                 ]
               }
             ]
           },
           {
             name: "CSS",
-            technologies: [
-              {
-                name: "Sass",
-                extensions: [".scss", ".sass"],
-                description: "Industry standard CSS preprocessor",
-                capabilities: [
-                  "Variables and functions for DRY code",
-                  "Nested selectors for better organization",
-                  "Mixins for reusable style patterns",
-                  "Mathematical operations and color functions"
-                ]
-              },
-              {
-                name: "PostCSS",
-                description: "Post-processing CSS with JavaScript plugins",
-                capabilities: [
-                  "Autoprefixer for vendor prefix management",
-                  "CSS Modules for scoped styling",
-                  "Future CSS syntax via polyfills",
-                  "Custom transformations via plugins"
-                ]
-              }
+            clusters: [
+              { name: "Post Processors", technologies: [
+                {
+                  name: "PostCSS",
+                  description: "Post-processing CSS with JavaScript plugins",
+                  capabilities: [
+                    "Autoprefixer for vendor prefix management",
+                    "CSS Modules for scoped styling",
+                    "Future CSS syntax via polyfills",
+                    "Custom transformations via plugins"
+                  ]
+                }
+              ] },
+              { name: "Pre Processors", technologies: [
+                {
+                  name: "Sass",
+                  extensions: [".scss", ".sass"],
+                  description: "Industry standard CSS preprocessor",
+                  capabilities: [
+                    "Variables and functions for DRY code",
+                    "Nested selectors for better organization",
+                    "Mixins for reusable style patterns",
+                    "Mathematical operations and color functions"
+                  ]
+                }
+              ] },
             ]
           },
           {
@@ -1078,9 +1061,9 @@
                     ]
                   },
                   {
-                    name: "TypeScript",
+                    name: "tsc",
                     extensions: [".ts", ".tsx"],
-                    description: "Typed superset of JavaScript for large applications",
+                    description: "TypeScript Compiler",
                     capabilities: [
                       "Static type checking and IntelliSense",
                       "Modern JavaScript features compilation",
@@ -1129,7 +1112,7 @@
             name: "HTML",
             technologies: [
               {
-                name: "Web Components",
+                name: "Web-Components",
                 extensions: [".js", ".ts"],
                 description: "Reusable custom elements with encapsulated functionality",
                 capabilities: [
@@ -1200,6 +1183,39 @@
           {
             name: "JavaScript",
             clusters: [
+              {
+                name: "ES6+",
+                technologies: [
+                  {
+                    name: "Browser APIs",
+                    description: "Native browser capabilities beyond basic DOM",
+                    capabilities: [
+                      "Geolocation, Local Storage, Service Workers",
+                      "Progressive Web App features",
+                      "WebGL for 3D graphics",
+                      "Web Components for reusable elements"
+                    ]
+                  },
+                  {
+                    name: "node:http",
+                    description: "Built-in Node.js HTTP server",
+                    capabilities: [
+                      "Server-side HTTP server without dependencies",
+                      "Built-in TypeScript definitions"
+                    ]
+                  },
+                  {
+                    name: "node:fs",
+                    description: "File system operations module",
+                    capabilities: [
+                      "Read/write files synchronously or asynchronously",
+                      "Directory traversal and manipulation",
+                      "File watching for development tools"
+                    ]
+                  },
+
+                ]
+              },
               {
                 name: "Frontend",
                 technologies: [
@@ -1355,7 +1371,21 @@
             ]
           }
         ]
-      }
+      },
+/*      {
+        name: "test",
+        level: 4,
+        sectors: [
+          {
+            name: "HTML",
+            technologies: [
+              {
+                name: "test"
+              }
+            ]
+          }
+        ]
+      }*/
     ]
   };
 
