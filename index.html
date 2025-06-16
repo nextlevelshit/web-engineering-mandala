@@ -471,8 +471,8 @@
 </head>
 <body>
 <div class="academic-header">
-    <div class="figure-number">Figure 3.1</div>
-    <div class="figure-title">Interactive Web Engineering Mandala</div>
+    <div class="figure-number">Figure 6.9</div>
+    <div class="figure-title">Web Engineering Mandala</div>
     <div class="figure-subtitle">Hierarchical visualization of JavaScript web development technologies (2025)
     </div>
 </div>
@@ -1002,7 +1002,7 @@
             lines.forEach((line, lineIndex) => {
                 techGroup.append('text')
                     .attr('x', tech.position.x)
-                    .attr('y', tech.position.y + config.techNodeRadius + 30 + (lineIndex * 10))
+                    .attr('y', tech.position.y + config.techNodeRadius + 17 + (lineIndex * 10))
                     .attr('class', 'technology-text')
                     .text(line);
             });
@@ -1141,31 +1141,34 @@
     const techRelationships = {
         // Core to Build Tools
         'package.json': ['HTML5', 'CSS3', 'JavaScript'],
-        'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
-        'CSS3': ['Sass', 'PostCSS'],
-        'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
+        'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks', 'Nuxt', 'Next.js', 'Astro', 'Parcel', 'SvelteKit', 'Deno', 'Bun'],
+        'CSS3': ['Sass', 'Vite', 'Nuxt', 'Next.js', 'Astro', 'Parcel', 'SvelteKit', 'Deno', 'Bun', 'PostCSS'],
+        'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit', 'Nuxt'],
         'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
-        'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
+        'node:fs': ['GatsbyJS', 'Astro'],
         'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
 
         // Build Tools to Application Layer
         // 'Pug': ['Astro'],
-        // 'Handlebars': ['11ty'],
+        'Handlebars': ['Vite'],
         // 'EJS': ['Express'],
         // 'Sass': ['Flowbite'],
-        'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
+        'PostCSS': ['Tailwind', 'Flowbite', 'Bootstrap', 'JavaScript', 'ShadCN'],
         'Parcel': ['React', 'Vue', 'Svelte'],
-        'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
+        'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Nunjucks', 'HTML5'],
         // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
         'Deno': ['Hono'],
+        'Nuxt': ['Vue', 'node:fs', 'node:http'],
+        'Next.js': ['React', 'node:fs', 'node:http'],
         'Bun': ['Hono'],
 
         // Application Layer connections (same level)
-        'React': ['Next.js'],
-        'Vue': ['Nuxt'],
+        // 'React': ['Next.js'],
+        // 'Vue': ['Nuxt'],
         'SvelteKit': ['Svelte'],
         'Tailwind': ['Flowbite'],
-        'Express': ['Pug', 'Handlebars', 'EJS']
+        'Express': ['Pug', 'Handlebars', 'EJS'],
+        'ShadCN': ['Vite'],
     };
 
     // Cleaned data with shorter names and proper structure
@@ -1658,16 +1661,16 @@
                                             "Better error handling"
                                         ]
                                     },
-                                    {
-                                        name: "Fastify",
-                                        description: "Fast and low overhead web framework",
-                                        capabilities: [
-                                            "JSON schema validation built-in",
-                                            "High performance with minimal overhead",
-                                            "Plugin architecture for extensibility",
-                                            "TypeScript support out of the box"
-                                        ]
-                                    },
+                                    // {
+                                    //     name: "Fastify",
+                                    //     description: "Fast and low overhead web framework",
+                                    //     capabilities: [
+                                    //         "JSON schema validation built-in",
+                                    //         "High performance with minimal overhead",
+                                    //         "Plugin architecture for extensibility",
+                                    //         "TypeScript support out of the box"
+                                    //     ]
+                                    // },
                                     {
                                         name: "Hono",
                                         description: "Ultrafast web framework for edge environments",
