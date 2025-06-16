@@ -49,6 +49,7 @@
       .technology-node {
           cursor: pointer;
           transition: all 0.3s ease;
+          border-radius: 50%;
       }
 
       .technology-node:hover {
@@ -70,7 +71,8 @@
       }
 
       .ring-label {
-          font-size: 24px;
+          pointer-events: none;
+          font-size: 32px;
           font-weight: 700;
           text-anchor: middle;
           fill: #dce3ea;
@@ -78,6 +80,7 @@
       }
 
       .sector-label {
+          pointer-events: none;
           font-size: 24px;
           font-weight: 900;
           text-anchor: middle;
@@ -125,9 +128,11 @@
           fill: #2d3748;
           stroke: #4a5568;
           stroke-width: 3;
+          border-radius: 50%;
       }
 
       .core-text {
+          pointer-events: none;
           font-size: 32px;
           font-weight: 800;
           text-anchor: middle;
@@ -404,7 +409,7 @@
   <dialog id="example-dialog">
     <div class="dialog-header">
       <h2 class="dialog-title" id="dialog-title">Example Details</h2>
-      <button class="dialog-close" id="dialog-close">&times;</button>
+      <button class="dialog-close" id="dialog-close" onclick="closeDialog()">&times;</button>
     </div>
     <div class="dialog-content" id="dialog-content">
       <!-- Content will be populated by JavaScript -->
@@ -421,7 +426,7 @@
     centerY: window.innerHeight / 2,
     coreRadius: 120,
     ringWidth: 200,
-    ringGap: 120,
+    ringGap: 10,
     techNodeRadius: 15,
     sectorColors: {
       HTML: '#1572b6',
@@ -457,6 +462,7 @@
   const dialog = document.getElementById('example-dialog');
   const dialogTitle = document.getElementById('dialog-title');
   const dialogContent = document.getElementById('dialog-content');
+  const dialogClose = document.getElementById('dialog-close');
 
   // Store all technologies for easy lookup
   let allTechnologies = new Map();
@@ -720,10 +726,15 @@
       .attr('cy', config.centerY)
       .attr('r', config.coreRadius)
       .attr('class', 'core-element')
+      .attr('tabindex', 0)
+      .attr('aria-label', coreData.technologies[0].name)
       .on('click', function (event) {
         selectTechnology(coreData.technologies[0]);
       })
       .on('mouseover', function (event) {
+        showTooltip(event, coreData.technologies[0]);
+      })
+      .on('focus', function (event) {
         showTooltip(event, coreData.technologies[0]);
       })
       .on('mouseout', hideTooltip);
@@ -747,22 +758,20 @@
   function renderRings(ringsData) {
     ringsData.forEach((ring, ringIndex) => {
       const ringGroup = mainLayer.append('g').attr('class', `ring-group ring-${ringIndex}`);
-
+      // Ring label
+      if (config.showLabels) {
+        ringGroup.append('text')
+              .attr('x', config.centerX)
+              .attr('y', config.centerY - ring.outerRadius + 54)
+              .attr('class', 'ring-label')
+              .text(ring.name);
+      }
       // Ring outline
       ringGroup.append('circle')
         .attr('cx', config.centerX)
         .attr('cy', config.centerY)
         .attr('r', ring.outerRadius)
         .attr('class', 'ring');
-
-      // Ring label
-      if (config.showLabels) {
-        ringGroup.append('text')
-          .attr('x', config.centerX)
-          .attr('y', config.centerY - ring.outerRadius - 34)
-          .attr('class', 'ring-label')
-          .text(ring.name);
-      }
 
       // Render sectors
       ring.sectors.forEach((sector, sectorIndex) => {
@@ -820,6 +829,7 @@
       .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
       .attr('class', 'cluster-background')
       .attr('stroke', sector.color)
+      .attr('tabindex', -1)
       .attr('stroke-opacity', 0.4);
 
     // Cluster label
@@ -847,12 +857,18 @@
       .attr('stroke', '#fff')
       .attr('stroke-width', techHasExample(tech.name) ? 4 : 4)
       .attr('class', 'technology-node')
+      .attr('aria-label', tech.name)
+      .attr('tabindex', 0)
       .attr('data-tech-id', tech.name)
       .on('click', function (event) {
         selectTechnology(tech);
         showExampleDialog(tech);
       })
       .on('mouseover', function (event) {
+        d3.select(this).attr('r', config.techNodeRadius * 1.1);
+        showTooltip(event, tech);
+      })
+      .on('focus', function (event) {
         d3.select(this).attr('r', config.techNodeRadius * 1.1);
         showTooltip(event, tech);
       })
@@ -953,7 +969,7 @@
       .style('opacity', 1)
       .html(content)
       .style('left', (event.pageX + 10) + 'px')
-      .style('top', (event.pageY - 10) + 'px');
+      .style('top', (event.pageY + 20) + 'px');
   }
 
   function hideTooltip() {
