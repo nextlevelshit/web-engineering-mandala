@@ -1029,6 +1029,7 @@
     }
 
     // Tooltip functions
+    // Tooltip functions
     function showTooltip(event, data) {
         let content = `<h3>${data.name}</h3>`;
 
@@ -1055,11 +1056,23 @@
               content += `<p><strong>Builds to:</strong> ${related.join(', ')}</p>`;
             }*/
 
+        // Get mouse position, fallback to element position for keyboard events
+        let mouseX, mouseY;
+        if (event.type === 'mouseover') {
+            mouseX = event.pageX;
+            mouseY = event.pageY;
+        } else {
+            // For keyboard events, get element position
+            const rect = event.target.getBoundingClientRect();
+            mouseX = rect.left + rect.width / 2;
+            mouseY = rect.top;
+        }
+
         tooltip
             .style('opacity', 1)
             .html(content)
-            .style('left', (event.pageX + 10) + 'px')
-            .style('top', (event.pageY + 20) + 'px');
+            .style('left', (mouseX + 10) + 'px')
+            .style('top', (mouseY + 20) + 'px');
     }
 
     function hideTooltip() {
