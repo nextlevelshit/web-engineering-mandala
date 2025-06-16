@@ -3,35 +3,6 @@
 ![image](https://github.com/user-attachments/assets/b6e08d48-69e5-4b92-b02c-ff4dc0a3f944)
 
 
-## Sitzung 1: Formalia & Internet 101 (09.05.)
-
-### Dozent
-**Michael Werner Czechowski**
-- Jahrgang 1988
-- B.Sc. Wirtschaftsinformatik (Leibniz-FH Hannover)
-- Angestellt bei PONS Langenscheidt GmbH Stuttgart
-- Honorardozent und Berater
-
-### Vorlesungsplan
-1. **09.05.** - Formalia, Kennenlernen, Internet 101
-2. **16.05.** - HTML und CSS (Frameworks)
-3. **23.05.** - JS (Frameworks) und npm
-4. **30.05.** - nodeJS: Scripting, Running and Building
-5. **06.06.** - Express API, CRUD und Middlewares
-6. **13.06.** - Testing (unit, integration, end-to-end)
-7. **20.06.** - TypeScript
-8. **27.06.** - Docker, Proxies and DBs
-9. **04.07.** - Präsentationen
-
-### Prüfungsleistung
-**Benotete Prüfungsleistung:**
-- Gruppenarbeit (2-3 Personen)
-- Entwicklung einer Web Applikation + Präsentation
-
-**Unbenotete Prüfungsvorleistung:**
-- Impulsvortrag zu Beginn jeder Sitzung (~10min)
-- Wiederholung des Stoffs der vorherigen Sitzung
-
 ### Internet Geschichte
 - 1966: ARPANET
 - 1969: RFCs → 1986 IETF → 1992 Internet Society
@@ -292,31 +263,4 @@ wss.on("connection", (ws) => {
     ws.send(`Echo: ${data}`);
   });
 });
-```
-
----
-
-## Prüfungskriterien
-
-### Bewertung (60 Punkte gesamt)
-- **Idee, Konzeption, Planung**: 20 Punkte
-- **Plattformunabhängigkeit**: 5 Punkte  
-- **Clean Code**: 25 Punkte
-- **Zusatzpunkte**: 10 Punkte
-
-### Zusatzpunkte Möglichkeiten
-- Dev/Prod Environment Trennung
-- Konfiguration via .env
-- HTTPS Implementation
-- Docker Container
-- UML Diagramme
-- Saubere Dokumentation
-- Nachhaltiges Testing
-- WCAG Compliance
-
-### Accessibility Mindestanforderungen
-- Input fields haben Labels
-- Keyboard Navigation möglich
-- "Skip to main content" Shortcut
-- Screen Reader kompatibel
 ```
