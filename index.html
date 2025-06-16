@@ -540,12 +540,19 @@
     const mainLayer = g.append('g').attr('class', 'main-layer');
 
     const zoom = d3.zoom()
-        .scaleExtent([0.5, 3])
+        .scaleExtent([0.3, 3])
         .on('zoom', (event) => {
             g.attr('transform', event.transform);
         });
 
     svg.call(zoom);
+
+    // Set initial zoom to be more zoomed out
+    const initialScale = 0.6;
+    svg.call(zoom.transform, d3.zoomIdentity.scale(initialScale).translate(
+        (config.width * (1 - initialScale)) / 2 / initialScale,
+        (config.height * (1 - initialScale)) / 2 / initialScale
+    ));
 
     // Tooltip and Dialog
     const tooltip = d3.select('#tooltip');
