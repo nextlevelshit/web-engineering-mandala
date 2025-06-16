@@ -1,4 +1,7 @@
-# Web Engineering - DHBW Stuttgart
+# Web Engineering - Mandala
+
+![image](https://github.com/user-attachments/assets/b6e08d48-69e5-4b92-b02c-ff4dc0a3f944)
+
 
 ## Sitzung 1: Formalia & Internet 101 (09.05.)
 
