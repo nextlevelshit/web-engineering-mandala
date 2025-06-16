@@ -1032,6 +1032,7 @@
     function clearSelection() {
         config.selectedTech = null;
         mainLayer.selectAll('.technology-node').classed('selected', false);
+        hideTooltip();
         clearConnections();
     }
 
