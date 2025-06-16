@@ -1,548 +1,639 @@
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Web Engineering Mandala</title>
-  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-  <style>
-      * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-      }
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Web Engineering Mandala</title>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      body {
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          background: radial-gradient(circle at center, #0f0f23 0%, #050517 100%);
-          color: #e2e8f0;
-          overflow: hidden;
-          min-height: 100vh;
-      }
+        body {
+            font-family: 'Helvetica Neue', 'Segoe UI', Arial, Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at center, #0f0f23 0%, #050517 100%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-      #container {
-          width: 100vw;
-          height: 100vh;
-          position: relative;
-      }
+        /* Academic Header */
+        .academic-header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 1000;
+            color: #e2e8f0;
+            width: 80%;
+        }
 
-      #skill-tree {
-          width: 100%;
-          height: 100%;
-      }
+        .figure-number {
+            font-family: 'Computer Modern', 'Times New Roman', serif;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #a0aec0;
+        }
 
-      .ring {
-          fill: none;
-          stroke: rgba(255, 255, 255, 0.1);
-          stroke-width: 1;
-      }
+        .figure-title {
+            font-family: 'Computer Modern', 'Times New Roman', serif;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
 
-      .sector {
-          cursor: pointer;
-          transition: all 0.3s ease;
-      }
+        .figure-subtitle {
+            font-family: 'Computer Modern', 'Times New Roman', serif;
+            font-size: 14px;
+            font-style: italic;
+            color: #cbd5e0;
+            line-height: 1.2;
+        }
 
-      .sector:hover {
-          filter: brightness(1.2);
-          stroke-width: 3;
-      }
+        /* Academic Footer */
+        .academic-footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 1000;
+            color: #a0aec0;
+            width: 90%;
+            font-family: 'Computer Modern', 'Times New Roman', serif;
+            font-size: 11px;
+            line-height: 1.4;
+        }
 
-      .technology-node {
-          cursor: pointer;
-          transition: all 0.3s ease;
-          border-radius: 50%;
-      }
+        .footer-notes {
+            margin-bottom: 8px;
+        }
 
-      .technology-node:hover {
-          filter: brightness(1.2);
-      }
+        .footer-source {
+            font-style: italic;
+            border-top: 1px solid #4a5568;
+            padding-top: 8px;
+        }
 
-      .technology-node.selected {
-          filter: drop-shadow(0 0 12px rgba(99, 179, 237, 0.8));
-      }
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            padding-top: 120px;
+            padding-bottom: 100px;
+        }
 
-      .technology-text {
-          font-size: 20px;
-          line-height: 24px;
-          font-weight: 800;
-          text-anchor: middle;
-          pointer-events: none;
-          fill: #f8fafc;
-          text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
-      }
+        #skill-tree {
+            width: 100%;
+            height: calc(100vh - 220px);
+        }
 
-      .ring-label {
-          pointer-events: none;
-          font-size: 32px;
-          font-weight: 700;
-          text-anchor: middle;
-          fill: #dce3ea;
-          text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
-      }
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
 
-      .sector-label {
-          pointer-events: none;
-          font-size: 24px;
-          font-weight: 900;
-          text-anchor: middle;
-          fill: #f7fafc;
-          opacity: 0.4;
-          text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
-      }
+        #skill-tree {
+            width: 100%;
+            height: 100%;
+        }
 
-      .cluster-group {
-          opacity: 0.8;
-      }
+        .ring {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+        }
 
-      .cluster-background {
-          font-size: 36px;
-          fill: none;
-          stroke-width: 2;
-      }
+        .sector {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-      .cluster-label {
-          font-size: 32px;
-          font-weight: 600;
-          text-anchor: middle;
-          fill: #a0aec0;
-          text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
-      }
+        .sector:hover {
+            filter: brightness(1.2);
+            stroke-width: 3;
+        }
 
-      .connection-line {
-          filter: brightness(1.2);
-          stroke: currentColor;
-          stroke-width: 6;
-          fill: none;
-          opacity: 0.7;
-          stroke-dasharray: 5, 5;
-          animation: dash 1s linear infinite;
-          animation-direction: reverse;
-      }
+        .technology-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 50%;
+        }
 
-      @keyframes dash {
-          to {
-              stroke-dashoffset: -10;
-          }
-      }
+        .technology-node:hover {
+            filter: brightness(1.2);
+        }
 
-      .core-element {
-          fill: #2d3748;
-          stroke: #4a5568;
-          stroke-width: 3;
-          border-radius: 50%;
-      }
+        .technology-node.selected {
+            filter: drop-shadow(0 0 12px rgba(99, 179, 237, 0.8));
+        }
 
-      .core-text {
-          pointer-events: none;
-          font-size: 32px;
-          font-weight: 800;
-          text-anchor: middle;
-          fill: #e2e8f0;
-          text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
-      }
+        .technology-text {
+            font-size: 20px;
+            line-height: 24px;
+            font-weight: 800;
+            text-anchor: middle;
+            pointer-events: none;
+            fill: #f8fafc;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+        }
 
-      #tooltip {
-          position: absolute;
-          background: rgba(26, 32, 44, 0.95);
-          border: 1px solid #4a5568;
-          border-radius: 8px;
-          padding: 12px;
-          pointer-events: none;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          max-width: 300px;
-          backdrop-filter: blur(8px);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-      }
+        .ring-label {
+            pointer-events: none;
+            font-size: 32px;
+            font-weight: 700;
+            text-anchor: middle;
+            fill: #dce3ea;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+        }
 
-      #tooltip h3 {
-          margin: 0 0 8px 0;
-          color: #63b3ed;
-          font-size: 16px;
-      }
+        .sector-label {
+            pointer-events: none;
+            font-size: 24px;
+            font-weight: 900;
+            text-anchor: middle;
+            fill: #f7fafc;
+            opacity: 0.4;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+        }
 
-      #tooltip p {
-          margin: 0 0 6px 0;
-          font-size: 13px;
-          line-height: 1.4;
-      }
+        .cluster-group {
+            opacity: 0.8;
+        }
 
-      #tooltip .capabilities {
-          margin-top: 8px;
-      }
+        .cluster-background {
+            font-size: 36px;
+            fill: none;
+            stroke-width: 2;
+        }
 
-      #tooltip .capability {
-          font-size: 12px;
-          color: #a0aec0;
-          margin: 2px 0;
-      }
+        .cluster-label {
+            font-size: 32px;
+            font-weight: 600;
+            text-anchor: middle;
+            fill: #a0aec0;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+        }
 
-      #tooltip .example-link {
-          margin-top: 12px;
-          padding: 6px 12px;
-          background: rgba(99, 179, 237, 0.2);
-          border: 1px solid rgba(99, 179, 237, 0.4);
-          border-radius: 4px;
-          color: #63b3ed;
-          font-size: 12px;
-          cursor: pointer;
-          display: inline-block;
-          transition: all 0.2s ease;
-      }
+        .connection-line {
+            filter: brightness(1.2);
+            stroke: currentColor;
+            stroke-width: 6;
+            fill: none;
+            opacity: 0.7;
+            stroke-dasharray: 5, 5;
+            animation: dash 1s linear infinite;
+            animation-direction: reverse;
+        }
 
-      #tooltip .example-link:hover {
-          background: rgba(99, 179, 237, 0.3);
-          border-color: rgba(99, 179, 237, 0.6);
-      }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -10;
+            }
+        }
 
-      .controls {
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          z-index: 1000;
-          display: flex;
-          gap: 10px;
-      }
+        .core-element {
+            fill: #2d3748;
+            stroke: #4a5568;
+            stroke-width: 3;
+            border-radius: 50%;
+        }
 
-      .control-btn {
-          background: rgba(26, 32, 44, 0.8);
-          border: 1px solid #4a5568;
-          color: #e2e8f0;
-          padding: 8px 12px;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 12px;
-          backdrop-filter: blur(4px);
-          transition: all 0.3s ease;
-      }
+        .core-text {
+            pointer-events: none;
+            font-size: 32px;
+            font-weight: 800;
+            text-anchor: middle;
+            fill: #e2e8f0;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.9);
+        }
 
-      .control-btn:hover {
-          background: rgba(26, 32, 44, 0.95);
-          border-color: #63b3ed;
-      }
+        #tooltip {
+            position: absolute;
+            background: rgba(26, 32, 44, 0.95);
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 300px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
 
-      .sector-background-label {
-          font-size: 120px;
-          font-weight: 900;
-          text-anchor: middle;
-          fill: rgba(255, 255, 255, 0.05);
-          text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
-          pointer-events: none;
-          z-index: 1;
-      }
+        #tooltip h3 {
+            margin: 0 0 8px 0;
+            color: #63b3ed;
+            font-size: 16px;
+        }
 
-      .file-extension {
-          font-size: 18px;
-          font-weight: 400;
-          text-anchor: middle;
-          fill: rgba(255, 255, 255, 0.9);
-          pointer-events: none;
-      }
+        #tooltip p {
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            line-height: 1.4;
+        }
 
-      .file-extension-small {
-          font-size: 12px;
-      }
+        #tooltip .capabilities {
+            margin-top: 8px;
+        }
 
-      /* Example Dialog Styles */
-      #example-dialog {
-          background: rgba(15, 15, 35, 0.95);
-          border: 2px solid #4a5568;
-          border-radius: 12px;
-          max-width: 80vw;
-          width: 60rem;
-          max-height: 80vh;
-          padding: 0;
-          margin: auto;
-          backdrop-filter: blur(10px);
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-          color: #e2e8f0;
-      }
+        #tooltip .capability {
+            font-size: 12px;
+            color: #a0aec0;
+            margin: 2px 0;
+        }
 
-      #example-dialog::backdrop {
-          background: rgba(0, 0, 0, 0.7);
-          backdrop-filter: blur(4px);
-      }
+        #tooltip .example-link {
+            margin-top: 12px;
+            padding: 6px 12px;
+            background: rgba(99, 179, 237, 0.2);
+            border: 1px solid rgba(99, 179, 237, 0.4);
+            border-radius: 4px;
+            color: #63b3ed;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
 
-      .dialog-header {
-          background: rgba(26, 32, 44, 0.8);
-          padding: 20px 24px;
-          border-bottom: 1px solid #4a5568;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-      }
+        #tooltip .example-link:hover {
+            background: rgba(99, 179, 237, 0.3);
+            border-color: rgba(99, 179, 237, 0.6);
+        }
 
-      .dialog-title {
-          color: #63b3ed;
-          font-size: 24px;
-          font-weight: 700;
-          margin: 0;
-      }
+        .controls {
+            position: absolute;
+            top: 130px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
 
-      .dialog-close {
-          background: transparent;
-          border: none;
-          color: #a0aec0;
-          font-size: 24px;
-          cursor: pointer;
-          padding: 4px;
-          line-height: 1;
-      }
+        .control-btn {
+            background: rgba(26, 32, 44, 0.8);
+            border: 1px solid #4a5568;
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+        }
 
-      .dialog-close:hover {
-          color: #e2e8f0;
-      }
+        .control-btn:hover {
+            background: rgba(26, 32, 44, 0.95);
+            border-color: #63b3ed;
+        }
 
-      .dialog-content {
-          padding: 24px;
-          overflow-y: auto;
-          max-height: calc(80vh - 120px);
-      }
+        .sector-background-label {
+            font-size: 120px;
+            font-weight: 900;
+            text-anchor: middle;
+            fill: rgba(255, 255, 255, 0.05);
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+            pointer-events: none;
+            z-index: 1;
+        }
 
-      .difficulty-badge {
-          display: inline-block;
-          padding: 4px 12px;
-          border-radius: 16px;
-          font-size: 12px;
-          font-weight: 600;
-          text-transform: uppercase;
-          margin-bottom: 16px;
-      }
+        .file-extension {
+            font-size: 18px;
+            font-weight: 400;
+            text-anchor: middle;
+            fill: rgba(255, 255, 255, 0.9);
+            pointer-events: none;
+        }
 
-      .difficulty-0 {
-          background: #065f46;
-          color: #10b981;
-      }
+        .file-extension-small {
+            font-size: 12px;
+        }
 
-      .difficulty-1 {
-          background: #1e40af;
-          color: #60a5fa;
-      }
+        /* Example Dialog Styles */
+        #example-dialog {
+            background: rgba(15, 15, 35, 0.95);
+            border: 2px solid #4a5568;
+            border-radius: 12px;
+            max-width: 80vw;
+            width: 60rem;
+            max-height: 80vh;
+            padding: 0;
+            margin: auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            color: #e2e8f0;
+        }
 
-      .difficulty-2 {
-          background: #7c2d12;
-          color: #fb923c;
-      }
+        #example-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+        }
 
-      .difficulty-3 {
-          background: #7c2d12;
-          color: #f87171;
-      }
+        .dialog-header {
+            background: rgba(26, 32, 44, 0.8);
+            padding: 20px 24px;
+            border-bottom: 1px solid #4a5568;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-      .section {
-          margin-bottom: 24px;
-      }
+        .dialog-title {
+            color: #63b3ed;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+        }
 
-      .section h3 {
-          color: #e2e8f0;
-          font-size: 18px;
-          font-weight: 600;
-          margin-bottom: 12px;
-          border-bottom: 1px solid #374151;
-          padding-bottom: 8px;
-      }
+        .dialog-close {
+            background: transparent;
+            border: none;
+            color: #a0aec0;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
 
-      .tech-list {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin-bottom: 16px;
-      }
+        .dialog-close:hover {
+            color: #e2e8f0;
+        }
 
-      .tech-tag {
-          background: rgba(99, 179, 237, 0.1);
-          color: #63b3ed;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          border: 1px solid rgba(99, 179, 237, 0.3);
-      }
+        .dialog-content {
+            padding: 24px;
+            overflow-y: auto;
+            max-height: calc(80vh - 120px);
+        }
 
-      .code-block {
-          background: #1a202c;
-          border: 1px solid #4a5568;
-          border-radius: 8px;
-          padding: 16px;
-          font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-          font-size: 13px;
-          line-height: 1.4;
-          overflow-x: auto;
-          white-space: pre;
-          color: #e2e8f0;
-      }
+        .difficulty-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
 
-      .file-tree {
-          background: #1a202c;
-          border: 1px solid #4a5568;
-          border-radius: 8px;
-          padding: 16px;
-          font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-          font-size: 13px;
-          line-height: 1.6;
-          color: #a0aec0;
-      }
+        .difficulty-0 {
+            background: #065f46;
+            color: #10b981;
+        }
 
-      .file-tree .folder {
-          color: #fbbf24;
-      }
+        .difficulty-1 {
+            background: #1e40af;
+            color: #60a5fa;
+        }
 
-      .file-tree .file {
-          color: #e2e8f0;
-      }
+        .difficulty-2 {
+            background: #7c2d12;
+            color: #fb923c;
+        }
 
-      .file-tree .generated {
-          color: #6b7280;
-          font-style: italic;
-      }
-  </style>
+        .difficulty-3 {
+            background: #7c2d12;
+            color: #f87171;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section h3 {
+            color: #e2e8f0;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #374151;
+            padding-bottom: 8px;
+        }
+
+        .tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tech-tag {
+            background: rgba(99, 179, 237, 0.1);
+            color: #63b3ed;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            border: 1px solid rgba(99, 179, 237, 0.3);
+        }
+
+        .code-block {
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+            color: #e2e8f0;
+        }
+
+        .file-tree {
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #a0aec0;
+        }
+
+        .file-tree .folder {
+            color: #fbbf24;
+        }
+
+        .file-tree .file {
+            color: #e2e8f0;
+        }
+
+        .file-tree .generated {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
+<div class="academic-header">
+    <div class="figure-number">Figure 3.1</div>
+    <div class="figure-title">Interactive Web Engineering Mandala</div>
+    <div class="figure-subtitle">Hierarchical visualization of contemporary web development technologies and their
+        interdependencies (2025)
+    </div>
+</div>
+
 <div id="container">
-  <div class="controls">
-    <button class="control-btn" id="reset-zoom">Reset View</button>
-    <button class="control-btn" id="clear-selection">Clear Selection</button>
-  </div>
-
-  <svg id="skill-tree"></svg>
-
-  <div id="tooltip"></div>
-
-  <dialog id="example-dialog">
-    <div class="dialog-header">
-      <h2 class="dialog-title" id="dialog-title">Example Details</h2>
-      <button class="dialog-close" id="dialog-close" onclick="closeDialog()">&times;</button>
+    <div class="controls">
+        <button class="control-btn" id="reset-zoom">Reset View</button>
+        <button class="control-btn" id="clear-selection">Clear Selection</button>
     </div>
-    <div class="dialog-content" id="dialog-content">
-      <!-- Content will be populated by JavaScript -->
+
+    <svg id="skill-tree"></svg>
+    <div id="tooltip"></div>
+
+    <dialog id="example-dialog">
+        <div class="dialog-header">
+            <h2 class="dialog-title" id="dialog-title">Example Details</h2>
+            <button class="dialog-close" id="dialog-close" onclick="closeDialog()">&times;</button>
+        </div>
+        <div class="dialog-content" id="dialog-content">
+            <!-- Content populated by JavaScript -->
+        </div>
+    </dialog>
+</div>
+
+<div class="academic-footer">
+    <div class="footer-notes">
+        <strong>Note:</strong> Click nodes to view detailed project structures and dependencies.
     </div>
-  </dialog>
+    <div class="footer-source">
+        <em>Source:</em> Compiled from modern web development practices and lecture notes.
+        <em>DHBW, Einführung Web Engineering (2025/TINF24B)</em>
+    </div>
 </div>
 
 <script>
-  // Configuration
-  const config = {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    centerX: window.innerWidth / 2,
-    centerY: window.innerHeight / 2,
-    coreRadius: 120,
-    ringWidth: 200,
-    ringGap: 10,
-    techNodeRadius: 15,
-    sectorColors: {
-      HTML: '#1572b6',
-      CSS: '#21fa11',
-      JavaScript: '#e34f26',
-      Foundation: '#2d3748'
-    },
-    showLabels: true,
-    selectedTech: null,
-    connectedTechs: new Set()
-  };
-
-  // Initialize SVG
-  const svg = d3.select('#skill-tree')
-    .attr('width', config.width)
-    .attr('height', config.height);
-
-  // Create main group with zoom behavior
-  const g = svg.append('g');
-  const connectionsLayer = g.append('g').attr('class', 'connections-layer');
-  const mainLayer = g.append('g').attr('class', 'main-layer');
-
-  const zoom = d3.zoom()
-    .scaleExtent([0.5, 3])
-    .on('zoom', (event) => {
-      g.attr('transform', event.transform);
-    });
-
-  svg.call(zoom);
-
-  // Tooltip and Dialog
-  const tooltip = d3.select('#tooltip');
-  const dialog = document.getElementById('example-dialog');
-  const dialogTitle = document.getElementById('dialog-title');
-  const dialogContent = document.getElementById('dialog-content');
-  const dialogClose = document.getElementById('dialog-close');
-
-  // Store all technologies for easy lookup
-  let allTechnologies = new Map();
-
-  // Utility functions
-  function degreesToRadians(degrees) {
-    return degrees * Math.PI / 180;
-  }
-
-  function getArcPath(innerRadius, outerRadius, startAngle, endAngle) {
-    const arc = d3.arc()
-      .innerRadius(innerRadius)
-      .outerRadius(outerRadius)
-      .startAngle(degreesToRadians(startAngle))
-      .endAngle(degreesToRadians(endAngle));
-    return arc();
-  }
-
-  function getLabelPosition(radius, angle) {
-    const radian = degreesToRadians(angle);
-    return {
-      x: config.centerX + radius * Math.cos(radian - Math.PI / 2),
-      y: config.centerY + radius * Math.sin(radian - Math.PI / 2)
+    // Configuration
+    const config = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        centerX: window.innerWidth / 2,
+        centerY: window.innerHeight / 2,
+        coreRadius: 120,
+        ringWidth: 200,
+        ringGap: 10,
+        techNodeRadius: 15,
+        sectorColors: {
+            HTML: '#1572b6',
+            CSS: '#21fa11',
+            JavaScript: '#e34f26',
+            Foundation: '#2d3748'
+        },
+        showLabels: true,
+        selectedTech: null,
+        connectedTechs: new Set()
     };
-  }
 
-  function getSectorColor(sectorName) {
-    const name = sectorName.toLowerCase();
-    if (name.includes('html') || name === 'html') return config.sectorColors.HTML;
-    if (name.includes('css') || name === 'css') return config.sectorColors.CSS;
-    if (name.includes('javascript') || name === 'javascript') return config.sectorColors.JavaScript;
-    if (name.includes('foundation') || name === 'foundation') return config.sectorColors.Foundation;
-    return '#666';
-  }
+    // Initialize SVG
+    const svg = d3.select('#skill-tree')
+        .attr('width', config.width)
+        .attr('height', config.height);
 
-  function wrapText(text, width) {
-    if (text.length <= width) return [text];
-    const words = text.split(' ');
-    if (words.length <= 1) return [text];
+    // Create main group with zoom behavior
+    const g = svg.append('g');
+    const connectionsLayer = g.append('g').attr('class', 'connections-layer');
+    const mainLayer = g.append('g').attr('class', 'main-layer');
 
-    const lines = [];
-    let currentLine = '';
+    const zoom = d3.zoom()
+        .scaleExtent([0.5, 3])
+        .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+        });
 
-    words.forEach(word => {
-      if ((currentLine + word).length < width) {
-        currentLine += (currentLine ? ' ' : '') + word;
-      } else {
+    svg.call(zoom);
+
+    // Tooltip and Dialog
+    const tooltip = d3.select('#tooltip');
+    const dialog = document.getElementById('example-dialog');
+    const dialogTitle = document.getElementById('dialog-title');
+    const dialogContent = document.getElementById('dialog-content');
+    const dialogClose = document.getElementById('dialog-close');
+
+    // Store all technologies for easy lookup
+    let allTechnologies = new Map();
+
+    // Utility functions
+    function degreesToRadians(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+    function getArcPath(innerRadius, outerRadius, startAngle, endAngle) {
+        const arc = d3.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius)
+            .startAngle(degreesToRadians(startAngle))
+            .endAngle(degreesToRadians(endAngle));
+        return arc();
+    }
+
+    function getLabelPosition(radius, angle) {
+        const radian = degreesToRadians(angle);
+        return {
+            x: config.centerX + radius * Math.cos(radian - Math.PI / 2),
+            y: config.centerY + radius * Math.sin(radian - Math.PI / 2)
+        };
+    }
+
+    function getSectorColor(sectorName) {
+        const name = sectorName.toLowerCase();
+        if (name.includes('html') || name === 'html') return config.sectorColors.HTML;
+        if (name.includes('css') || name === 'css') return config.sectorColors.CSS;
+        if (name.includes('javascript') || name === 'javascript') return config.sectorColors.JavaScript;
+        if (name.includes('foundation') || name === 'foundation') return config.sectorColors.Foundation;
+        return '#666';
+    }
+
+    function wrapText(text, width) {
+        if (text.length <= width) return [text];
+        const words = text.split(' ');
+        if (words.length <= 1) return [text];
+
+        const lines = [];
+        let currentLine = '';
+
+        words.forEach(word => {
+            if ((currentLine + word).length < width) {
+                currentLine += (currentLine ? ' ' : '') + word;
+            } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+            }
+        });
+
         if (currentLine) lines.push(currentLine);
-        currentLine = word;
-      }
-    });
+        return lines;
+    }
 
-    if (currentLine) lines.push(currentLine);
-    return lines;
-  }
+    // Find example for technology
+    function findExampleForTech(techName) {
+        return examples.find(example =>
+            example.technologies.includes(techName)
+        );
+    }
 
-  // Find example for technology
-  function findExampleForTech(techName) {
-    return examples.find(example =>
-      example.technologies.includes(techName)
-    );
-  }
+    function techHasExample(techName) {
+        return examples.some(example =>
+            example.technologies.includes(techName)
+        );
+    }
 
-  function techHasExample(techName) {
-    return examples.some(example =>
-      example.technologies.includes(techName)
-    );
-  }
+    // Dialog functions
+    function showExampleDialog(tech) {
+        const example = findExampleForTech(tech.name);
+        if (!example) return;
 
-  // Dialog functions
-  function showExampleDialog(tech) {
-    const example = findExampleForTech(tech.name);
-    if (!example) return;
+        dialogTitle.textContent = example.name;
 
-    dialogTitle.textContent = example.name;
+        const difficultyLevels = ['Foundation', 'Core', 'Build', 'Application'];
+        const difficultyColors = ['difficulty-0', 'difficulty-1', 'difficulty-2', 'difficulty-3'];
 
-    const difficultyLevels = ['Foundation', 'Core', 'Build', 'Application'];
-    const difficultyColors = ['difficulty-0', 'difficulty-1', 'difficulty-2', 'difficulty-3'];
-
-    dialogContent.innerHTML = `
+        dialogContent.innerHTML = `
       <div class="difficulty-badge ${difficultyColors[example.level]}">
         Level ${example.level}: ${difficultyLevels[example.level]}
       </div>
@@ -565,1582 +656,1583 @@
       </div>
     `;
 
-    dialog.showModal();
-  }
+        dialog.showModal();
+    }
 
-  function formatFileTree(fileTree) {
-    return fileTree.join('\n\r');
-  }
+    function formatFileTree(fileTree) {
+        return fileTree.join('\n\r');
+    }
 
-  function closeDialog() {
-    dialog.close();
-  }
+    function closeDialog() {
+        dialog.close();
+    }
 
-  // Data processing function
-  function processSkillTreeData(skillTreeData) {
-    const processedData = {
-      core: skillTreeData.core,
-      rings: []
-    };
-
-    skillTreeData.rings.forEach((ring, ringIndex) => {
-      const ringData = {
-        ...ring,
-        innerRadius: config.coreRadius + (ringIndex * (config.ringWidth + config.ringGap)) + config.ringGap,
-        outerRadius: config.coreRadius + ((ringIndex + 1) * config.ringWidth) + (ringIndex * config.ringGap) + config.ringGap,
-        sectors: []
-      };
-
-      const sectorAngle = 360 / Math.max(ring.sectors.length, 3);
-
-      ring.sectors.forEach((sector, sectorIndex) => {
-        const startAngle = sectorIndex * sectorAngle;
-        const endAngle = (sectorIndex + 1) * sectorAngle;
-
-        const sectorData = {
-          ...sector,
-          startAngle,
-          endAngle,
-          midAngle: startAngle + sectorAngle / 2,
-          color: getSectorColor(sector.name || sector.sectorType || 'HTML'),
-          technologies: [],
-          clusters: []
+    // Data processing function
+    function processSkillTreeData(skillTreeData) {
+        const processedData = {
+            core: skillTreeData.core,
+            rings: []
         };
 
-        // Process direct technologies
-        if (sector.technologies) {
-          sector.technologies.forEach((tech, techIndex) => {
-            const techAngle = startAngle + (techIndex + 1) * (sectorAngle / (sector.technologies.length + 1));
-            const techRadius = ringData.innerRadius + (ringData.outerRadius - ringData.innerRadius) * 0.6;
-
-            const techData = {
-              ...tech,
-              angle: techAngle,
-              radius: techRadius,
-              position: getLabelPosition(techRadius, techAngle),
-              id: tech.name
+        skillTreeData.rings.forEach((ring, ringIndex) => {
+            const ringData = {
+                ...ring,
+                innerRadius: config.coreRadius + (ringIndex * (config.ringWidth + config.ringGap)) + config.ringGap,
+                outerRadius: config.coreRadius + ((ringIndex + 1) * config.ringWidth) + (ringIndex * config.ringGap) + config.ringGap,
+                sectors: []
             };
 
-            sectorData.technologies.push(techData);
-            allTechnologies.set(tech.name, techData);
-          });
-        }
+            const sectorAngle = 360 / Math.max(ring.sectors.length, 3);
 
-        // Process clusters
-        if (sector.clusters) {
-          let totalTechs = 0;
-          sector.clusters.forEach(cluster => {
-            totalTechs += cluster.technologies.length;
-          });
+            ring.sectors.forEach((sector, sectorIndex) => {
+                const startAngle = sectorIndex * sectorAngle;
+                const endAngle = (sectorIndex + 1) * sectorAngle;
 
-          let currentTechIndex = 0;
-          sector.clusters.forEach((cluster, clusterIndex) => {
-            const clusterStartAngle = startAngle + (currentTechIndex / totalTechs) * sectorAngle;
-            const clusterEndAngle = startAngle + ((currentTechIndex + cluster.technologies.length) / totalTechs) * sectorAngle;
+                const sectorData = {
+                    ...sector,
+                    startAngle,
+                    endAngle,
+                    midAngle: startAngle + sectorAngle / 2,
+                    color: getSectorColor(sector.name || sector.sectorType || 'HTML'),
+                    technologies: [],
+                    clusters: []
+                };
 
-            const clusterData = {
-              ...cluster,
-              startAngle: clusterStartAngle,
-              endAngle: clusterEndAngle,
-              technologies: []
-            };
+                // Process direct technologies
+                if (sector.technologies) {
+                    sector.technologies.forEach((tech, techIndex) => {
+                        const techAngle = startAngle + (techIndex + 1) * (sectorAngle / (sector.technologies.length + 1));
+                        const techRadius = ringData.innerRadius + (ringData.outerRadius - ringData.innerRadius) * 0.6;
 
-            cluster.technologies.forEach((tech, techIndex) => {
-              const techAngle = clusterStartAngle + (techIndex + 0.5) * ((clusterEndAngle - clusterStartAngle) / cluster.technologies.length);
-              const techRadius = ringData.innerRadius + (ringData.outerRadius - ringData.innerRadius) * 0.6;
+                        const techData = {
+                            ...tech,
+                            angle: techAngle,
+                            radius: techRadius,
+                            position: getLabelPosition(techRadius, techAngle),
+                            id: tech.name
+                        };
 
-              const techData = {
-                ...tech,
-                angle: techAngle,
-                radius: techRadius,
-                position: getLabelPosition(techRadius, techAngle),
-                cluster: cluster.name,
-                id: tech.name
-              };
+                        sectorData.technologies.push(techData);
+                        allTechnologies.set(tech.name, techData);
+                    });
+                }
 
-              clusterData.technologies.push(techData);
-              sectorData.technologies.push(techData);
-              allTechnologies.set(tech.name, techData);
+                // Process clusters
+                if (sector.clusters) {
+                    let totalTechs = 0;
+                    sector.clusters.forEach(cluster => {
+                        totalTechs += cluster.technologies.length;
+                    });
+
+                    let currentTechIndex = 0;
+                    sector.clusters.forEach((cluster, clusterIndex) => {
+                        const clusterStartAngle = startAngle + (currentTechIndex / totalTechs) * sectorAngle;
+                        const clusterEndAngle = startAngle + ((currentTechIndex + cluster.technologies.length) / totalTechs) * sectorAngle;
+
+                        const clusterData = {
+                            ...cluster,
+                            startAngle: clusterStartAngle,
+                            endAngle: clusterEndAngle,
+                            technologies: []
+                        };
+
+                        cluster.technologies.forEach((tech, techIndex) => {
+                            const techAngle = clusterStartAngle + (techIndex + 0.5) * ((clusterEndAngle - clusterStartAngle) / cluster.technologies.length);
+                            const techRadius = ringData.innerRadius + (ringData.outerRadius - ringData.innerRadius) * 0.6;
+
+                            const techData = {
+                                ...tech,
+                                angle: techAngle,
+                                radius: techRadius,
+                                position: getLabelPosition(techRadius, techAngle),
+                                cluster: cluster.name,
+                                id: tech.name
+                            };
+
+                            clusterData.technologies.push(techData);
+                            sectorData.technologies.push(techData);
+                            allTechnologies.set(tech.name, techData);
+                        });
+
+                        sectorData.clusters.push(clusterData);
+                        currentTechIndex += cluster.technologies.length;
+                    });
+                }
+
+                ringData.sectors.push(sectorData);
             });
 
-            sectorData.clusters.push(clusterData);
-            currentTechIndex += cluster.technologies.length;
-          });
-        }
+            processedData.rings.push(ringData);
+        });
 
-        ringData.sectors.push(sectorData);
-      });
-
-      processedData.rings.push(ringData);
-    });
-
-    return processedData;
-  }
-
-  // Connection functions
-  function drawConnection(tech1, tech2) {
-    const line = connectionsLayer.append('path')
-      .attr('class', 'connection-line')
-      .attr('d', d3.line()([
-        [tech1.position.x, tech1.position.y],
-        [tech2.position.x, tech2.position.y]
-      ]));
-  }
-
-  function clearConnections() {
-    connectionsLayer.selectAll('.connection-line').remove();
-    config.connectedTechs.clear();
-  }
-
-  function showRelatedTechnologies(tech) {
-    clearConnections();
-
-    const related = techRelationships[tech.name] || [];
-    related.forEach(relatedName => {
-      const relatedTech = allTechnologies.get(relatedName);
-      if (relatedTech) {
-        drawConnection(tech, relatedTech);
-        config.connectedTechs.add(relatedName);
-      }
-    });
-
-    // Also show reverse relationships
-    Object.entries(techRelationships).forEach(([parentName, children]) => {
-      if (children.includes(tech.name)) {
-        const parentTech = allTechnologies.get(parentName);
-        if (parentTech) {
-          drawConnection(parentTech, tech);
-          config.connectedTechs.add(parentName);
-        }
-      }
-    });
-  }
-
-  // Render functions
-  function renderCore(coreData) {
-    const coreGroup = mainLayer.append('g').attr('class', 'core-group');
-
-    // Core circle
-    coreGroup.append('circle')
-      .attr('cx', config.centerX)
-      .attr('cy', config.centerY)
-      .attr('r', config.coreRadius)
-      .attr('class', 'core-element')
-      .attr('tabindex', 0)
-      .attr('aria-label', coreData.technologies[0].name)
-      .on('click', function (event) {
-        selectTechnology(coreData.technologies[0]);
-      })
-      .on('mouseover', function (event) {
-        showTooltip(event, coreData.technologies[0]);
-      })
-      .on('focus', function (event) {
-        showTooltip(event, coreData.technologies[0]);
-      })
-      .on('mouseout', hideTooltip);
-
-    // Core label
-    coreGroup.append('text')
-      .attr('x', config.centerX)
-      .attr('y', config.centerY)
-      .attr('class', 'core-text')
-      .text(coreData.technologies[0].name);
-
-    // Add core technology to map
-    const coretech = {
-      ...coreData.technologies[0],
-      position: { x: config.centerX, y: config.centerY },
-      id: coreData.technologies[0].name
-    };
-    allTechnologies.set(coreData.technologies[0].name, coretech);
-  }
-
-  function renderRings(ringsData) {
-    ringsData.forEach((ring, ringIndex) => {
-      const ringGroup = mainLayer.append('g').attr('class', `ring-group ring-${ringIndex}`);
-      // Ring label
-      if (config.showLabels) {
-        ringGroup.append('text')
-              .attr('x', config.centerX)
-              .attr('y', config.centerY - ring.outerRadius + 54)
-              .attr('class', 'ring-label')
-              .text(ring.name);
-      }
-      // Ring outline
-      ringGroup.append('circle')
-        .attr('cx', config.centerX)
-        .attr('cy', config.centerY)
-        .attr('r', ring.outerRadius)
-        .attr('class', 'ring');
-
-      // Render sectors
-      ring.sectors.forEach((sector, sectorIndex) => {
-        renderSector(ringGroup, sector, ring);
-      });
-    });
-  }
-
-  function renderSector(parent, sector, ring) {
-    const sectorGroup = parent.append('g').attr('class', `sector-group sector-${(sector.name || 'unknown').toLowerCase()}`);
-
-    // Sector arc
-    const arcPath = getArcPath(ring.innerRadius, ring.outerRadius, sector.startAngle, sector.endAngle);
-
-    sectorGroup.append('path')
-      .attr('d', arcPath)
-      .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
-      .attr('fill', sector.color)
-      .attr('stroke', sector.color)
-      .attr('fill-opacity', 0.5)
-      .attr('class', 'sector')
-      .on('mouseover', function (event) {
-        d3.select(this).attr('fill-opacity', 0.3);
-      })
-      .on('mouseout', function (event) {
-        d3.select(this).attr('fill-opacity', 0.5);
-      });
-
-    // Render clusters
-    if (sector.clusters) {
-      sector.clusters.forEach(cluster => {
-        renderCluster(sectorGroup, cluster, sector, ring);
-      });
+        return processedData;
     }
 
-    // Render technologies
-    sector.technologies.forEach((tech, techIndex) => {
-      renderTechnology(sectorGroup, tech, sector);
-    });
-  }
-
-  function renderCluster(parent, cluster, sector, ring) {
-    const clusterGroup = parent.append('g').attr('class', 'cluster-group');
-
-    // Cluster background arc
-    const clusterArc = getArcPath(
-      ring.innerRadius,
-      ring.outerRadius,
-      cluster.startAngle,
-      cluster.endAngle
-    );
-
-    clusterGroup.append('path')
-      .attr('d', clusterArc)
-      .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
-      .attr('class', 'cluster-background')
-      .attr('stroke', sector.color)
-      .attr('tabindex', -1)
-      .attr('stroke-opacity', 0.4);
-
-    // Cluster label
-    const midAngle = (cluster.startAngle + cluster.endAngle) / 2;
-    const labelPos = getLabelPosition(ring.innerRadius + config.ringWidth / 2 - 20, midAngle);
-
-    clusterGroup.append('text')
-      .attr('x', labelPos.x)
-      .attr('y', labelPos.y)
-      .attr('class', 'cluster-label')
-      .style('fill', sector.color)
-      .text(cluster.name);
-  }
-
-  function renderTechnology(parent, tech, sector) {
-    const techGroup = parent.append('g').attr('class', 'technology-group');
-
-    // Technology node
-    const node = techGroup.append('circle')
-      .attr('cx', tech.position.x)
-      .attr('cy', tech.position.y)
-      .attr('r', config.techNodeRadius)
-      .attr('fill', sector.color)
-      .attr('stroke-opacity', techHasExample(tech.name) ? 1 : 0.5)
-      .attr('stroke', '#fff')
-      .attr('stroke-width', techHasExample(tech.name) ? 4 : 4)
-      .attr('class', 'technology-node')
-      .attr('aria-label', tech.name)
-      .attr('tabindex', 0)
-      .attr('data-tech-id', tech.name)
-      .on('click', function (event) {
-        selectTechnology(tech);
-        showExampleDialog(tech);
-      })
-      .on('mouseover', function (event) {
-        d3.select(this).attr('r', config.techNodeRadius * 1.1);
-        showTooltip(event, tech);
-      })
-      .on('focus', function (event) {
-        d3.select(this).attr('r', config.techNodeRadius * 1.1);
-        showTooltip(event, tech);
-      })
-      .on('mouseout', function (event) {
-        d3.select(this).attr('r', config.techNodeRadius);
-        hideTooltip();
-      });
-
-    // Render file extensions in upper arc around technology node
-    if (tech.extensions && tech.extensions.length > 0) {
-      const extRadius = config.techNodeRadius + 28;
-      const arcSpan = Math.PI; // Upper semicircle (180 degrees)
-      const startAngle = 0; // Start at right (3 o'clock)
-      const angleStep = -arcSpan / (tech.extensions.length - 1 || 1); // Negative to go counterclockwise
-
-      tech.extensions.forEach((ext, index) => {
-        const angle = startAngle + (index * angleStep);
-        const extX = tech.position.x + Math.cos(angle) * extRadius;
-        const extY = tech.position.y + Math.sin(angle) * extRadius + 6;
-
-        const fontClass = tech.extensions.length > 3 ? 'file-extension file-extension-small' : 'file-extension';
-
-        techGroup.append('text')
-          .attr('x', extX)
-          .attr('y', extY)
-          .attr('class', fontClass)
-          .text(ext);
-      });
+    // Connection functions
+    function drawConnection(tech1, tech2) {
+        const line = connectionsLayer.append('path')
+            .attr('class', 'connection-line')
+            .attr('d', d3.line()([
+                [tech1.position.x, tech1.position.y],
+                [tech2.position.x, tech2.position.y]
+            ]));
     }
 
-    // Technology label (existing code)
-    if (config.showLabels) {
-      const lines = wrapText(tech.name, 12);
-      lines.forEach((line, lineIndex) => {
-        techGroup.append('text')
-          .attr('x', tech.position.x)
-          .attr('y', tech.position.y + config.techNodeRadius + 30 + (lineIndex * 10))
-          .attr('class', 'technology-text')
-          .text(line);
-      });
-    }
-  }
-
-  // Selection and interaction functions
-  function selectTechnology(tech) {
-    // Clear previous selection
-    mainLayer.selectAll('.technology-node').classed('selected', false);
-
-    if (config.selectedTech && config.selectedTech.name === tech.name) {
-      // Deselect if clicking same tech
-      config.selectedTech = null;
-      clearConnections();
-      return;
+    function clearConnections() {
+        connectionsLayer.selectAll('.connection-line').remove();
+        config.connectedTechs.clear();
     }
 
-    // Select new technology
-    config.selectedTech = tech;
-    mainLayer.select(`[data-tech-id="${tech.name}"]`).classed('selected', true);
+    function showRelatedTechnologies(tech) {
+        clearConnections();
 
-    // Show related technologies
-    showRelatedTechnologies(tech);
-  }
+        const related = techRelationships[tech.name] || [];
+        related.forEach(relatedName => {
+            const relatedTech = allTechnologies.get(relatedName);
+            if (relatedTech) {
+                drawConnection(tech, relatedTech);
+                config.connectedTechs.add(relatedName);
+            }
+        });
 
-  function clearSelection() {
-    config.selectedTech = null;
-    mainLayer.selectAll('.technology-node').classed('selected', false);
-    clearConnections();
-  }
-
-  // Tooltip functions
-  function showTooltip(event, data) {
-    let content = `<h3>${data.name}</h3>`;
-
-    if (data.description) {
-      content += `<p>${data.description}</p>`;
-    }
-
-    if (data.capabilities && data.capabilities.length > 0) {
-      content += `<div class="capabilities">`;
-      content += `<strong>Key Features:</strong>`;
-      data.capabilities.forEach(cap => {
-        content += `<div class="capability">• ${cap}</div>`;
-      });
-      content += `</div>`;
-    }
-
-    if (data.extensions && data.extensions.length > 0) {
-      content += `<p><strong>File Extensions:</strong> ${data.extensions.join(', ')}</p>`;
-    }
-
-    // Show related technologies
-    /*    const related = techRelationships[data.name];
-        if (related && related.length > 0) {
-          content += `<p><strong>Builds to:</strong> ${related.join(', ')}</p>`;
-        }*/
-
-    tooltip
-      .style('opacity', 1)
-      .html(content)
-      .style('left', (event.pageX + 10) + 'px')
-      .style('top', (event.pageY + 20) + 'px');
-  }
-
-  function hideTooltip() {
-    tooltip.style('opacity', 0);
-  }
-
-  // Control functions
-  function resetZoom() {
-    svg.transition()
-      .duration(750)
-      .call(zoom.transform, d3.zoomIdentity);
-  }
-
-  function toggleLabels() {
-    config.showLabels = !config.showLabels;
-    mainLayer.selectAll('.technology-text, .ring-label, .cluster-label')
-      .style('opacity', config.showLabels ? 1 : 0);
-  }
-
-  // Event listeners
-  d3.select('#reset-zoom').on('click', resetZoom);
-  d3.select('#toggle-labels').on('click', toggleLabels);
-  d3.select('#clear-selection').on('click', clearSelection);
-
-  // Click outside to clear selection
-  svg.on('click', function (event) {
-    if (event.target === this) {
-      clearSelection();
-    }
-  });
-
-  // Window resize handler
-  window.addEventListener('resize', () => {
-    config.width = window.innerWidth;
-    config.height = window.innerHeight;
-    config.centerX = config.width / 2;
-    config.centerY = config.height / 2;
-
-    svg.attr('width', config.width).attr('height', config.height);
-  });
-
-  // Main render function
-  function renderSkillTree(skillTreeData) {
-    // Clear existing content
-    mainLayer.selectAll('*').remove();
-    connectionsLayer.selectAll('*').remove();
-    allTechnologies.clear();
-
-    // Process the data
-    const processedData = processSkillTreeData(skillTreeData);
-
-    // Render from outside-in so inner rings appear on top
-    renderRings(processedData.rings.slice().reverse());
-    renderCore(processedData.core);
-  }
-
-  // Technology relationships for path creation
-  const techRelationships = {
-    // Core to Build Tools
-    'package.json': ['HTML5', 'CSS3', 'JavaScript'],
-    'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
-    'CSS3': ['Sass', 'PostCSS'],
-    'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
-    'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
-    'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
-    'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
-
-    // Build Tools to Application Layer
-    // 'Pug': ['Astro'],
-    // 'Handlebars': ['11ty'],
-    // 'EJS': ['Express'],
-    // 'Sass': ['Flowbite'],
-    'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
-    'Parcel': ['React', 'Vue', 'Svelte'],
-    'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
-    // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
-    'Deno': ['Hono'],
-    'Bun': ['Hono'],
-
-    // Application Layer connections (same level)
-    'React': ['Next.js'],
-    'Vue': ['Nuxt'],
-    'SvelteKit': ['Svelte'],
-    'Tailwind': ['Flowbite'],
-    'Express': ['Pug', 'Handlebars', 'EJS']
-  };
-
-  // Cleaned data with shorter names and proper structure
-  const webEngineeringSkillTree = {
-    metadata: {
-      title: "Web Engineering Mandala",
-      description: "RPG-style progression through web development complexity layers",
-      version: "1.0.0"
-    },
-
-    core: {
-      level: 0,
-      name: "Foundation",
-      description: "The absolute minimum - you can build anything starting here",
-      technologies: [{
-        name: "package.json",
-        description: "Node.js project manifest - defines scripts, dependencies, metadata",
-        capabilities: [
-          "Define npm scripts for any task",
-          "Manage dependencies with semantic versioning",
-          "Execute tools via npx without global installation",
-          "Configure project metadata and entry points"
-        ]
-      }]
-    },
-
-    rings: [
-      {
-        level: 1,
-        name: "Core Layer",
-        description: "The fundamental building blocks of the web",
-        sectors: [
-          {
-            name: "HTML",
-            technologies: [
-              {
-                name: "HTML5",
-                extensions: [".html"],
-                description: "Modern semantic markup for accessible, SEO-friendly documents",
-                capabilities: [
-                  "Document structure with semantic meaning",
-                  "Accessibility through proper element hierarchy",
-                  "SEO optimization via structured content",
-                  "Form validation and user input handling"
-                ]
-              }
-            ]
-          },
-          {
-            name: "CSS",
-            technologies: [
-              {
-                name: "CSS3",
-                extensions: [".css"],
-                description: "Flexbox, Grid, and responsive design systems",
-                capabilities: [
-                  "Complex layouts with Flexbox and CSS Grid",
-                  "Responsive design with media queries",
-                  "Custom properties (CSS variables) for theming",
-                  "Animations and transitions for user experience"
-                ]
-              }
-            ]
-          },
-          {
-            name: "JavaScript",
-            technologies: [
-              {
-                name: "JavaScript",
-                extensions: [".js", ".mjs", ".cjs"],
-                description: "Contemporary JavaScript with latest language features",
-                capabilities: [
-                  "Async/await for non-blocking operations",
-                  "Modules (ESM) for code organization",
-                  "DOM manipulation and event handling",
-                  "Fetch API for network requests"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-
-      {
-        level: 2,
-        name: "Build Layer",
-        description: "Tools that process, optimize, and enhance core web technologies",
-        sectors: [
-          {
-            name: "HTML",
-            clusters: [
-              {
-                name: "Template Engines",
-                technologies: [
-                  {
-                    name: "Nunjucks",
-                    extensions: [".nks"]
-                  },
-                  {
-                    name: "Pug",
-                    extensions: [".pug"],
-                    description: "Clean, whitespace-sensitive templating",
-                    capabilities: [
-                      "Dynamic content generation from data",
-                      "Reusable components and partials",
-                      "Logic-less templates for security",
-                      "Compile-time HTML optimization"
-                    ]
-                  },
-                  {
-                    name: "Handlebars",
-                    extensions: [".hbs"],
-                    description: "Logic-less templates with helpers",
-                    capabilities: [
-                      "Template inheritance and partials",
-                      "Custom helper functions",
-                      "Build-time HTML optimization",
-                      "Server-side and client-side rendering"
-                    ]
-                  },
-                  {
-                    name: "EJS",
-                    extensions: [".ejs"],
-                    description: "Embedded JavaScript templating",
-                    capabilities: [
-                      "JavaScript expressions in templates",
-                      "Include system for template composition",
-                      "Fast compilation and rendering",
-                      "Express.js integration"
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            name: "CSS",
-            clusters: [
-              {
-                name: "Post Processors", technologies: [
-                  {
-                    name: "PostCSS",
-                    description: "Post-processing CSS with JavaScript plugins",
-                    capabilities: [
-                      "Autoprefixer for vendor prefix management",
-                      "CSS Modules for scoped styling",
-                      "Future CSS syntax via polyfills",
-                      "Custom transformations via plugins"
-                    ]
-                  }
-                ]
-              },
-              {
-                name: "Pre Processors", technologies: [
-                  {
-                    name: "Sass",
-                    extensions: [".scss", ".sass"],
-                    description: "Industry standard CSS preprocessor",
-                    capabilities: [
-                      "Variables and functions for DRY code",
-                      "Nested selectors for better organization",
-                      "Mixins for reusable style patterns",
-                      "Mathematical operations and color functions"
-                    ]
-                  }
-                ]
-              },
-            ]
-          },
-          {
-            name: "JavaScript",
-            clusters: [
-              {
-                name: "Bundlers",
-                technologies: [
-                  {
-                    name: "Parcel",
-                    description: "Zero-configuration build tool",
-                    capabilities: [
-                      "Automatic dependency resolution",
-                      "Built-in dev server with hot reload",
-                      "Code splitting and lazy loading",
-                      "Asset optimization without config"
-                    ]
-                  },
-                  {
-                    name: "Vite",
-                    description: "Lightning-fast dev server with ESM",
-                    capabilities: [
-                      "Instant server start with native ESM",
-                      "Hot Module Replacement (HMR)",
-                      "Rollup-based production optimization",
-                      "Framework-agnostic architecture"
-                    ]
-                  },
-                  {
-                    name: "SvelteKit",
-                    description: "Svelte-powered full-stack framework",
-                    capabilities: [
-                      "File-based routing system",
-                      "Server-side rendering with hydration",
-                      "Zero-config TypeScript support",
-                      "Adapter system for any deployment target"
-                    ]
-                  },
-                  {
-                    name: "tsc",
-                    extensions: [".ts", ".tsx"],
-                    description: "TypeScript Compiler",
-                    capabilities: [
-                      "Static type checking and IntelliSense",
-                      "Modern JavaScript features compilation",
-                      "Interface definitions for APIs",
-                      "Enhanced refactoring and debugging"
-                    ]
-                  }
-                ]
-              },
-              {
-                name: "Runtimes",
-                technologies: [
-                  {
-                    name: "Deno",
-                    description: "Secure TypeScript runtime",
-                    capabilities: [
-                      "Built-in TypeScript support without compilation",
-                      "Secure by default with explicit permissions",
-                      "Standard library with modern APIs",
-                      "Built-in testing and formatting tools"
-                    ]
-                  },
-                  {
-                    name: "Bun",
-                    description: "Fast all-in-one JavaScript runtime",
-                    capabilities: [
-                      "Extremely fast package installation",
-                      "Built-in bundler and test runner",
-                      "Node.js compatibility with performance gains",
-                      "Native TypeScript execution"
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-
-      {
-        level: 3,
-        name: "Application Layer",
-        description: "Full-stack frameworks, production deployment, and specialized patterns",
-        sectors: [
-          {
-            name: "HTML",
-            technologies: [
-              {
-                name: "Web-Components",
-                extensions: [".js", ".ts"],
-                description: "Reusable custom elements with encapsulated functionality",
-                capabilities: [
-                  "Shadow DOM for style encapsulation",
-                  "Custom element registration and lifecycle",
-                  "HTML templates and slots",
-                  "Framework-agnostic component architecture"
-                ]
-              },
-              {
-                name: "WebAssembly",
-                extensions: [".wasm"],
-                description: "Binary instruction format for high-performance web applications",
-                capabilities: [
-                  "Near-native performance in browsers",
-                  "Support for multiple programming languages",
-                  "Secure sandboxed execution environment",
-                  "Interoperability with JavaScript"
-                ]
-              }
-            ]
-          },
-          {
-            name: "CSS",
-            technologies: [
-              {
-                name: "Tailwind",
-                description: "Utility-first CSS framework",
-                capabilities: [
-                  "Rapid prototyping with utility classes",
-                  "Consistent design system with design tokens",
-                  "Automatic CSS purging for production",
-                  "Component extraction patterns"
-                ]
-              },
-              {
-                name: "Bootstrap",
-                description: "Popular CSS framework with pre-built components",
-                capabilities: [
-                  "Responsive grid system and utilities",
-                  "Pre-styled UI components",
-                  "JavaScript plugins for interactions",
-                  "Customizable Sass variables and mixins"
-                ]
-              },
-              {
-                name: "ShadCN",
-                description: "Re-usable components built with Radix UI and Tailwind",
-                capabilities: [
-                  "Copy-paste component architecture",
-                  "Accessibility-first design patterns",
-                  "Customizable design system tokens",
-                  "TypeScript support with proper typing"
-                ]
-              },
-              {
-                name: "Flowbite",
-                description: "Tailwind CSS component library",
-                capabilities: [
-                  "Pre-built components with Tailwind classes",
-                  "Accessibility-first design patterns",
-                  "Customizable design tokens system",
-                  "Framework integrations available"
-                ]
-              }
-            ]
-          },
-          {
-            name: "JavaScript",
-            clusters: [
-              {
-                name: "ES6+",
-                technologies: [
-                  {
-                    name: "Browser APIs",
-                    description: "Native browser capabilities beyond basic DOM",
-                    capabilities: [
-                      "Geolocation, Local Storage, Service Workers",
-                      "Progressive Web App features",
-                      "WebGL for 3D graphics",
-                      "Web Components for reusable elements"
-                    ]
-                  },
-                  {
-                    name: "node:http",
-                    description: "Built-in Node.js HTTP server",
-                    capabilities: [
-                      "Server-side HTTP server without dependencies",
-                      "Built-in TypeScript definitions"
-                    ]
-                  },
-                  {
-                    name: "node:fs",
-                    description: "File system operations module",
-                    capabilities: [
-                      "Read/write files synchronously or asynchronously",
-                      "Directory traversal and manipulation",
-                      "File watching for development tools"
-                    ]
-                  },
-
-                ]
-              },
-              {
-                name: "Frontend",
-                technologies: [
-                  {
-                    name: "React",
-                    extensions: [".jsx", ".tsx"],
-                    description: "Component-based UI library with virtual DOM",
-                    capabilities: [
-                      "Virtual DOM for efficient updates",
-                      "Unidirectional data flow pattern",
-                      "Rich ecosystem of libraries and tools",
-                      "Concurrent features for performance"
-                    ]
-                  },
-                  {
-                    name: "Vue",
-                    extensions: [".vue"],
-                    description: "Progressive framework with template syntax",
-                    capabilities: [
-                      "Template-based syntax with optional JSX",
-                      "Reactive data binding with Composition API",
-                      "Component-based architecture",
-                      "Gradual adoption strategy"
-                    ]
-                  },
-                  {
-                    name: "Angular",
-                    extensions: [".ts", ".html"],
-                    description: "Full-featured framework with TypeScript",
-                    capabilities: [
-                      "Dependency injection system",
-                      "Two-way data binding with RxJS",
-                      "CLI tooling for project scaffolding",
-                      "Enterprise-ready architecture patterns"
-                    ]
-                  },
-                  {
-                    name: "Svelte",
-                    extensions: [".svelte"],
-                    description: "Compile-time framework with no runtime",
-                    capabilities: [
-                      "No runtime overhead with compile-time optimization",
-                      "Built-in state management and reactivity",
-                      "Smooth animations with built-in transitions",
-                      "Small bundle sizes"
-                    ]
-                  }
-                ]
-              },
-              {
-                name: "Backend",
-                technologies: [
-                  {
-                    name: "Express",
-                    description: "Minimal web framework for Node.js",
-                    capabilities: [
-                      "Middleware-based request processing",
-                      "Flexible routing system",
-                      "Template engine integration",
-                      "Large ecosystem of plugins"
-                    ]
-                  },
-                  {
-                    name: "Koa",
-                    description: "Next-generation web framework by Express team",
-                    capabilities: [
-                      "Async/await by default",
-                      "Context object for request/response",
-                      "Lightweight core with middleware composition",
-                      "Better error handling"
-                    ]
-                  },
-                  {
-                    name: "Fastify",
-                    description: "Fast and low overhead web framework",
-                    capabilities: [
-                      "JSON schema validation built-in",
-                      "High performance with minimal overhead",
-                      "Plugin architecture for extensibility",
-                      "TypeScript support out of the box"
-                    ]
-                  },
-                  {
-                    name: "Hono",
-                    description: "Ultrafast web framework for edge environments",
-                    capabilities: [
-                      "Edge runtime compatibility (Cloudflare Workers, Deno)",
-                      "TypeScript-first development experience",
-                      "Minimal dependencies and small footprint",
-                      "Express-like API design"
-                    ]
-                  }
-                ]
-              },
-              {
-                name: "SSR/SSG",
-                technologies: [
-                  {
-                    name: "Astro",
-                    extensions: [".astro", ".md", ".mdx"],
-                    description: "Multi-framework static site generator",
-                    capabilities: [
-                      "Build-time content generation with any framework",
-                      "Component islands architecture for selective hydration",
-                      "Framework-agnostic development approach",
-                      "Automatic performance optimization"
-                    ]
-                  },
-                  {
-                    name: "GatsbyJS",
-                    extensions: [".jsx", ".tsx", ".md", ".mdx"],
-                    description: "Simple, flexible static site generator",
-                    capabilities: [
-                      "Multiple template languages support",
-                      "Data-driven site generation from any source",
-                      "Extensible plugin ecosystem",
-                      "Zero-config deployment ready"
-                    ]
-                  },
-                  /*                  {
-                                      name: "11ty",
-                                      extensions: [".md"],
-                                      description: "Simple, flexible static site generator",
-                                      capabilities: [
-                                        "Multiple template languages support",
-                                        "Data-driven site generation from any source",
-                                        "Extensible plugin ecosystem",
-                                        "Zero-config deployment ready"
-                                      ]
-                                    },*/
-                  {
-                    name: "Next.js",
-                    description: "React-based full-stack framework",
-                    capabilities: [
-                      "Server-side rendering and static generation",
-                      "API routes for backend functionality",
-                      "Automatic code splitting and optimization",
-                      "Built-in performance monitoring"
-                    ]
-                  },
-                  {
-                    name: "Nuxt",
-                    description: "Vue.js-based full-stack framework",
-                    capabilities: [
-                      "Universal rendering with Vue.js",
-                      "Auto-generated routing from file structure",
-                      "Module ecosystem for functionality",
-                      "Static site generation capabilities"
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      /*      {
-              name: "test",
-              level: 4,
-              sectors: [
-                {
-                  name: "HTML",
-                  technologies: [
-                    {
-                      name: "test"
-                    }
-                  ]
+        // Also show reverse relationships
+        Object.entries(techRelationships).forEach(([parentName, children]) => {
+            if (children.includes(tech.name)) {
+                const parentTech = allTechnologies.get(parentName);
+                if (parentTech) {
+                    drawConnection(parentTech, tech);
+                    config.connectedTechs.add(parentName);
                 }
-              ]
-            }*/
-    ]
-  };
-
-  const examples = [
-    // Add these to the examples array:
-
-    {
-      "id": "node-http-server",
-      "level": 3,
-      "name": "Pure Node.js HTTP Server",
-      "technologies": ["node:http", "node:fs"],
-      "package": {
-        "name": "conference-node",
-        "version": "1.0.0",
-        "type": "module",
-        "scripts": {
-          "dev": "node --watch server.js",
-          "start": "node server.js",
-          "deploy": "pm2 start server.js --name conference-server"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "server.js",
-        "public/",
-        "  index.html",
-        "  speakers.html",
-        "  schedule.html",
-        "  style.css",
-        "  script.js",
-        "data/",
-        "  speakers.json",
-        "  schedule.json"
-      ]
-    },
-
-    {
-      "id": "astro-ssg",
-      "level": 3,
-      "name": "Astro Multi-Framework SSG",
-      "technologies": ["Astro", "React", "Vue", "Tailwind"],
-      "package": {
-        "name": "conference-astro",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "astro dev --port 8000",
-          "build": "astro build",
-          "preview": "astro preview --port 8000",
-          "deploy": "npm run build && npx surge dist conference-astro.surge.sh",
-          "deploy:vercel": "npm run build && npx vercel --prod"
-        },
-        "dependencies": {
-          "astro": "^4.5.0",
-          "@astrojs/react": "^3.1.0",
-          "@astrojs/vue": "^4.0.0",
-          "@astrojs/tailwind": "^5.1.0",
-          "react": "^18.2.0",
-          "vue": "^3.4.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "astro.config.mjs",
-        "tailwind.config.mjs",
-        "src/",
-        "  pages/",
-        "    index.astro",
-        "    speakers.astro",
-        "    schedule.astro",
-        "  layouts/",
-        "    Layout.astro",
-        "  components/",
-        "    Navigation.astro",
-        "    SpeakerCard.jsx",  // React island
-        "    ScheduleFilter.vue", // Vue island
-        "  content/",
-        "    speakers/",
-        "      john-doe.md",
-        "      jane-smith.md",
-        "  data/",
-        "    config.json",
-        "  styles/",
-        "    global.css",
-        "dist/",
-        "  (generated)"
-      ]
-    },
-
-    {
-      "id": "vue-spa",
-      "level": 3,
-      "name": "Vue 3 SPA",
-      "technologies": ["Vue", "Vite", "Tailwind"],
-      "package": {
-        "name": "conference-vue",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "vite --port 8000",
-          "build": "vite build",
-          "preview": "vite preview --port 8000",
-          "deploy": "npm run build && npx surge dist conference-vue.surge.sh"
-        },
-        "dependencies": {
-          "vue": "^3.4.0",
-          "vue-router": "^4.3.0"
-        },
-        "devDependencies": {
-          "vite": "^5.2.0",
-          "@vitejs/plugin-vue": "^5.0.0",
-          "tailwindcss": "^3.4.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "vite.config.js",
-        "index.html",
-        "src/",
-        "  main.js",
-        "  App.vue",
-        "  router/",
-        "    index.js",
-        "  views/",
-        "    Home.vue",
-        "    Speakers.vue",
-        "    Schedule.vue",
-        "  components/",
-        "    Navigation.vue",
-        "    SpeakerCard.vue",
-        "    ScheduleItem.vue",
-        "  composables/",
-        "    useLocalStorage.js",
-        "    useAPI.js",
-        "  data/",
-        "    speakers.json",
-        "  styles/",
-        "    main.css"
-      ]
-    },
-
-    {
-      "id": "nuxt-fullstack",
-      "level": 3,
-      "name": "Nuxt Full-Stack",
-      "technologies": ["Nuxt", "Vue", "Tailwind"],
-      "package": {
-        "name": "conference-nuxt",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "nuxt dev --port 8000",
-          "build": "nuxt build",
-          "preview": "nuxt preview --port 8000",
-          "generate": "nuxt generate",
-          "deploy:static": "npm run generate && npx surge .output/public conference-nuxt.surge.sh",
-          "deploy:vercel": "npx vercel --prod"
-        },
-        "dependencies": {
-          "nuxt": "^3.11.0",
-          "@nuxtjs/tailwindcss": "^6.11.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "nuxt.config.ts",
-        "tailwind.config.js",
-        "app.vue",
-        "pages/",
-        "  index.vue",
-        "  speakers/",
-        "    index.vue",
-        "    [slug].vue",
-        "  schedule.vue",
-        "layouts/",
-        "  default.vue",
-        "components/",
-        "  Navigation.vue",
-        "  SpeakerCard.vue",
-        "server/",
-        "  api/",
-        "    speakers.get.ts",
-        "    schedule.get.ts",
-        "content/",
-        "  speakers/",
-        "    john-doe.md",
-        "public/",
-        "  favicon.ico",
-        ".output/",
-        "  (generated)"
-      ]
-    },
-
-    {
-      "id": "svelte-spa",
-      "level": 3,
-      "name": "Svelte SPA",
-      "technologies": ["Svelte", "Vite", "Tailwind"],
-      "package": {
-        "name": "conference-svelte",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "vite dev --port 8000",
-          "build": "vite build",
-          "preview": "vite preview --port 8000",
-          "deploy": "npm run build && npx surge dist conference-svelte.surge.sh"
-        },
-        "dependencies": {
-          "svelte": "^4.2.0",
-          "svelte-spa-router": "^4.0.0"
-        },
-        "devDependencies": {
-          "vite": "^5.2.0",
-          "@sveltejs/vite-plugin-svelte": "^3.0.0",
-          "tailwindcss": "^3.4.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "vite.config.js",
-        "svelte.config.js",
-        "index.html",
-        "src/",
-        "  main.js",
-        "  App.svelte",
-        "  routes/",
-        "    Home.svelte",
-        "    Speakers.svelte",
-        "    Schedule.svelte",
-        "  components/",
-        "    Navigation.svelte",
-        "    SpeakerCard.svelte",
-        "  stores/",
-        "    speakers.js",
-        "    schedule.js",
-        "  lib/",
-        "    utils.js",
-        "  app.css"
-      ]
-    },
-
-    {
-      "id": "shadcn-react",
-      "level": 3,
-      "name": "React + ShadCN Components",
-      "technologies": ["React", "ShadCN", "Tailwind", "Vite"],
-      "package": {
-        "name": "conference-shadcn",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "vite --port 8000",
-          "build": "vite build",
-          "preview": "vite preview --port 8000",
-          "deploy": "npm run build && npx surge dist conference-shadcn.surge.sh",
-          "ui:add": "npx shadcn-ui@latest add"
-        },
-        "dependencies": {
-          "react": "^18.2.0",
-          "react-dom": "^18.2.0",
-          "react-router-dom": "^6.22.0",
-          "@radix-ui/react-slot": "^1.0.2",
-          "class-variance-authority": "^0.7.0",
-          "clsx": "^2.1.0",
-          "tailwind-merge": "^2.2.0",
-          "lucide-react": "^0.363.0"
-        },
-        "devDependencies": {
-          "vite": "^5.2.0",
-          "@vitejs/plugin-react": "^4.2.0",
-          "tailwindcss": "^3.4.0",
-          "tailwindcss-animate": "^1.0.7"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "vite.config.ts",
-        "tailwind.config.js",
-        "components.json",
-        "index.html",
-        "src/",
-        "  main.tsx",
-        "  App.tsx",
-        "  components/",
-        "    ui/",
-        "      button.tsx",
-        "      card.tsx",
-        "      badge.tsx",
-        "      dialog.tsx",
-        "    Navigation.tsx",
-        "    SpeakerCard.tsx",
-        "    ScheduleDialog.tsx",
-        "  pages/",
-        "    Home.tsx",
-        "    Speakers.tsx",
-        "    Schedule.tsx",
-        "  lib/",
-        "    utils.ts",
-        "  styles/",
-        "    globals.css"
-      ]
-    },
-    {
-      "id": "foundation",
-      "level": 0,
-      "name": "Foundation Only",
-      "technologies": ["package.json"],
-      "package": {
-        "name": "conference-landing",
-        "version": "1.0.0",
-        "scripts": {
-          "start": "python3 -m http.server 8000",
-          "deploy": "rsync -av ./ user@server:/var/www/"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "index.html",
-        "style.css",
-        "script.js"
-      ]
-    },
-    {
-      "id": "core-vanilla",
-      "level": 1,
-      "name": "Core Web Technologies",
-      "technologies": ["HTML5", "CSS3", "JavaScript"],
-      "package": {
-        "name": "conference-vanilla",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "npx serve . -p 8000",
-          "build": "echo 'No build step needed'",
-          "deploy": "npx surge . conference-vanilla.surge.sh"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "index.html",
-        "speakers.html",
-        "schedule.html",
-        "css/",
-        "  main.css",
-        "  layout.css",
-        "js/",
-        "  app.js",
-        "  utils.js",
-        "assets/",
-        "  logo.svg",
-        "  hero.jpg"
-      ]
-    },
-    {
-      "id": "build-minimal",
-      "level": 2,
-      "name": "Minimal Build Tools",
-      "technologies": ["Parcel", "HTML5", "CSS3", "JavaScript"],
-      "package": {
-        "name": "conference-parcel",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "parcel src/index.html --port 8000",
-          "build": "parcel build src/index.html --dist-dir dist --public-url ./",
-          "preview": "npx serve dist -p 8000"
-        },
-        "devDependencies": {
-          "parcel": "^2.12.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "src/",
-        "  index.html",
-        "  speakers.html",
-        "  schedule.html",
-        "  styles/",
-        "    main.css",
-        "    components.css",
-        "  js/",
-        "    app.js",
-        "    modules/",
-        "      calendar.js",
-        "      speakers.js",
-        "  assets/",
-        "    images/",
-        "      logo.svg",
-        "dist/",
-        "  (generated)"
-      ]
-    },
-    {
-      "id": "template-processing",
-      "level": 2,
-      "name": "Template + CSS Processing",
-      "technologies": ["Vite", "Pug", "Tailwind", "PostCSS"],
-      "package": {
-        "name": "conference-templates",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "vite --port 8000",
-          "build": "vite build",
-          "preview": "npx serve dist -p 8000"
-        },
-        "devDependencies": {
-          "vite": "^5.2.0",
-          "pug": "^3.0.2",
-          "tailwindcss": "^3.4.0",
-          "autoprefixer": "^10.4.0",
-          "postcss": "^8.4.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "vite.config.js",
-        "tailwind.config.js",
-        "postcss.config.js",
-        "src/",
-        "  index.pug",
-        "  speakers.pug",
-        "  schedule.pug",
-        "  templates/",
-        "    layout.pug",
-        "    components/",
-        "      speaker-card.pug",
-        "      nav.pug",
-        "  styles/",
-        "    main.css",
-        "    components.css",
-        "  js/",
-        "    app.js",
-        "    modules/",
-        "      calendar.js",
-        "  data/",
-        "    speakers.json",
-        "    schedule.json",
-        "dist/",
-        "  (generated)"
-      ]
-    },
-    {
-      "id": "react-spa",
-      "level": 3,
-      "name": "React SPA",
-      "technologies": ["React", "Vite", "Tailwind", "Browser APIs"],
-      "package": {
-        "name": "conference-react",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "vite --port 8000",
-          "build": "vite build",
-          "preview": "npx serve dist -p 8000"
-        },
-        "dependencies": {
-          "react": "^18.2.0",
-          "react-dom": "^18.2.0"
-        },
-        "devDependencies": {
-          "vite": "^5.2.0",
-          "@vitejs/plugin-react": "^4.2.0",
-          "tailwindcss": "^3.4.0",
-          "autoprefixer": "^10.4.0",
-          "postcss": "^8.4.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "vite.config.js",
-        "tailwind.config.js",
-        "index.html",
-        "src/",
-        "  main.jsx",
-        "  App.jsx",
-        "  components/",
-        "    Layout.jsx",
-        "    Navigation.jsx",
-        "    SpeakerCard.jsx",
-        "    ScheduleItem.jsx",
-        "  pages/",
-        "    Home.jsx",
-        "    Speakers.jsx",
-        "    Schedule.jsx",
-        "  hooks/",
-        "    useLocalStorage.js",
-        "    useAPI.js",
-        "  data/",
-        "    speakers.json",
-        "    schedule.json",
-        "  styles/",
-        "    index.css",
-        "dist/",
-        "  (generated)"
-      ]
-    },
-    {
-      "id": "fullstack-ssr",
-      "level": 3,
-      "name": "Full-Stack SSR",
-      "technologies": ["Next.js", "React"],
-      "package": {
-        "name": "conference-nextjs",
-        "version": "1.0.0",
-        "scripts": {
-          "dev": "next dev -p 8000",
-          "build": "next build",
-          "start": "next start",
-          "export": "next build && next export"
-        },
-        "dependencies": {
-          "next": "^14.1.0",
-          "react": "^18.2.0",
-          "react-dom": "^18.2.0"
-        },
-        "devDependencies": {
-          "@types/node": "^20.0.0",
-          "@types/react": "^18.0.0",
-          "typescript": "^5.0.0",
-          "tailwindcss": "^3.4.0"
-        }
-      },
-      "fileTree": [
-        "package.json",
-        "next.config.js",
-        "tailwind.config.js",
-        "tsconfig.json",
-        "src/",
-        "  app/",
-        "    layout.tsx",
-        "    page.tsx",
-        "    speakers/",
-        "      page.tsx",
-        "    schedule/",
-        "      page.tsx",
-        "    api/",
-        "      speakers/",
-        "        route.ts",
-        "      schedule/",
-        "        route.ts",
-        "  components/",
-        "    Navigation.tsx",
-        "    SpeakerCard.tsx",
-        "    ScheduleItem.tsx",
-        "  lib/",
-        "    data.ts",
-        "    utils.ts",
-        "  styles/",
-        "    globals.css",
-        "  data/",
-        "    speakers.json",
-        "    schedule.json",
-        ".next/",
-        "  (generated)",
-        "out/",
-        "  (generated for export)"
-      ]
+            }
+        });
     }
-  ];
 
-  // Initialize the visualization
-  renderSkillTree(webEngineeringSkillTree);
+    // Render functions
+    function renderCore(coreData) {
+        const coreGroup = mainLayer.append('g').attr('class', 'core-group');
+
+        // Core circle
+        coreGroup.append('circle')
+            .attr('cx', config.centerX)
+            .attr('cy', config.centerY)
+            .attr('r', config.coreRadius)
+            .attr('class', 'core-element')
+            .attr('tabindex', 0)
+            .attr('aria-label', coreData.technologies[0].name)
+            .on('click', function (event) {
+                selectTechnology(coreData.technologies[0]);
+            })
+            .on('mouseover', function (event) {
+                showTooltip(event, coreData.technologies[0]);
+            })
+            .on('focus', function (event) {
+                showTooltip(event, coreData.technologies[0]);
+            })
+            .on('mouseout', hideTooltip);
+
+        // Core label
+        coreGroup.append('text')
+            .attr('x', config.centerX)
+            .attr('y', config.centerY)
+            .attr('class', 'core-text')
+            .text(coreData.technologies[0].name);
+
+        // Add core technology to map
+        const coretech = {
+            ...coreData.technologies[0],
+            position: {x: config.centerX, y: config.centerY},
+            id: coreData.technologies[0].name
+        };
+        allTechnologies.set(coreData.technologies[0].name, coretech);
+    }
+
+    function renderRings(ringsData) {
+        ringsData.forEach((ring, ringIndex) => {
+            const ringGroup = mainLayer.append('g').attr('class', `ring-group ring-${ringIndex}`);
+            // Ring label
+            if (config.showLabels) {
+                ringGroup.append('text')
+                    .attr('x', config.centerX)
+                    .attr('y', config.centerY - ring.outerRadius + 54)
+                    .attr('class', 'ring-label')
+                    .text(ring.name);
+            }
+            // Ring outline
+            ringGroup.append('circle')
+                .attr('cx', config.centerX)
+                .attr('cy', config.centerY)
+                .attr('r', ring.outerRadius)
+                .attr('class', 'ring');
+
+            // Render sectors
+            ring.sectors.forEach((sector, sectorIndex) => {
+                renderSector(ringGroup, sector, ring);
+            });
+        });
+    }
+
+    function renderSector(parent, sector, ring) {
+        const sectorGroup = parent.append('g').attr('class', `sector-group sector-${(sector.name || 'unknown').toLowerCase()}`);
+
+        // Sector arc
+        const arcPath = getArcPath(ring.innerRadius, ring.outerRadius, sector.startAngle, sector.endAngle);
+
+        sectorGroup.append('path')
+            .attr('d', arcPath)
+            .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
+            .attr('fill', sector.color)
+            .attr('stroke', sector.color)
+            .attr('fill-opacity', 0.5)
+            .attr('class', 'sector')
+            .on('mouseover', function (event) {
+                d3.select(this).attr('fill-opacity', 0.3);
+            })
+            .on('mouseout', function (event) {
+                d3.select(this).attr('fill-opacity', 0.5);
+            });
+
+        // Render clusters
+        if (sector.clusters) {
+            sector.clusters.forEach(cluster => {
+                renderCluster(sectorGroup, cluster, sector, ring);
+            });
+        }
+
+        // Render technologies
+        sector.technologies.forEach((tech, techIndex) => {
+            renderTechnology(sectorGroup, tech, sector);
+        });
+    }
+
+    function renderCluster(parent, cluster, sector, ring) {
+        const clusterGroup = parent.append('g').attr('class', 'cluster-group');
+
+        // Cluster background arc
+        const clusterArc = getArcPath(
+            ring.innerRadius,
+            ring.outerRadius,
+            cluster.startAngle,
+            cluster.endAngle
+        );
+
+        clusterGroup.append('path')
+            .attr('d', clusterArc)
+            .attr('transform', `translate(${config.centerX}, ${config.centerY})`)
+            .attr('class', 'cluster-background')
+            .attr('stroke', sector.color)
+            .attr('tabindex', -1)
+            .attr('stroke-opacity', 0.4);
+
+        // Cluster label
+        const midAngle = (cluster.startAngle + cluster.endAngle) / 2;
+        const labelPos = getLabelPosition(ring.innerRadius + config.ringWidth / 2 - 20, midAngle);
+
+        clusterGroup.append('text')
+            .attr('x', labelPos.x)
+            .attr('y', labelPos.y)
+            .attr('class', 'cluster-label')
+            .style('fill', sector.color)
+            .text(cluster.name);
+    }
+
+    function renderTechnology(parent, tech, sector) {
+        const techGroup = parent.append('g').attr('class', 'technology-group');
+
+        // Technology node
+        const node = techGroup.append('circle')
+            .attr('cx', tech.position.x)
+            .attr('cy', tech.position.y)
+            .attr('r', config.techNodeRadius)
+            .attr('fill', sector.color)
+            .attr('stroke-opacity', techHasExample(tech.name) ? 1 : 0.5)
+            .attr('stroke', '#fff')
+            .attr('stroke-width', techHasExample(tech.name) ? 4 : 4)
+            .attr('class', 'technology-node')
+            .attr('aria-label', tech.name)
+            .attr('tabindex', 0)
+            .attr('data-tech-id', tech.name)
+            .on('click', function (event) {
+                selectTechnology(tech);
+                showExampleDialog(tech);
+            })
+            .on('mouseover', function (event) {
+                d3.select(this).attr('r', config.techNodeRadius * 1.1);
+                showTooltip(event, tech);
+            })
+            .on('focus', function (event) {
+                d3.select(this).attr('r', config.techNodeRadius * 1.1);
+                showTooltip(event, tech);
+            })
+            .on('mouseout', function (event) {
+                d3.select(this).attr('r', config.techNodeRadius);
+                hideTooltip();
+            });
+
+        // Render file extensions in upper arc around technology node
+        if (tech.extensions && tech.extensions.length > 0) {
+            const extRadius = config.techNodeRadius + 28;
+            const arcSpan = Math.PI; // Upper semicircle (180 degrees)
+            const startAngle = 0; // Start at right (3 o'clock)
+            const angleStep = -arcSpan / (tech.extensions.length - 1 || 1); // Negative to go counterclockwise
+
+            tech.extensions.forEach((ext, index) => {
+                const angle = startAngle + (index * angleStep);
+                const extX = tech.position.x + Math.cos(angle) * extRadius;
+                const extY = tech.position.y + Math.sin(angle) * extRadius + 6;
+
+                const fontClass = tech.extensions.length > 3 ? 'file-extension file-extension-small' : 'file-extension';
+
+                techGroup.append('text')
+                    .attr('x', extX)
+                    .attr('y', extY)
+                    .attr('class', fontClass)
+                    .text(ext);
+            });
+        }
+
+        // Technology label (existing code)
+        if (config.showLabels) {
+            const lines = wrapText(tech.name, 12);
+            lines.forEach((line, lineIndex) => {
+                techGroup.append('text')
+                    .attr('x', tech.position.x)
+                    .attr('y', tech.position.y + config.techNodeRadius + 30 + (lineIndex * 10))
+                    .attr('class', 'technology-text')
+                    .text(line);
+            });
+        }
+    }
+
+    // Selection and interaction functions
+    function selectTechnology(tech) {
+        // Clear previous selection
+        mainLayer.selectAll('.technology-node').classed('selected', false);
+
+        if (config.selectedTech && config.selectedTech.name === tech.name) {
+            // Deselect if clicking same tech
+            config.selectedTech = null;
+            clearConnections();
+            return;
+        }
+
+        // Select new technology
+        config.selectedTech = tech;
+        mainLayer.select(`[data-tech-id="${tech.name}"]`).classed('selected', true);
+
+        // Show related technologies
+        showRelatedTechnologies(tech);
+    }
+
+    function clearSelection() {
+        config.selectedTech = null;
+        mainLayer.selectAll('.technology-node').classed('selected', false);
+        clearConnections();
+    }
+
+    // Tooltip functions
+    function showTooltip(event, data) {
+        let content = `<h3>${data.name}</h3>`;
+
+        if (data.description) {
+            content += `<p>${data.description}</p>`;
+        }
+
+        if (data.capabilities && data.capabilities.length > 0) {
+            content += `<div class="capabilities">`;
+            content += `<strong>Key Features:</strong>`;
+            data.capabilities.forEach(cap => {
+                content += `<div class="capability">• ${cap}</div>`;
+            });
+            content += `</div>`;
+        }
+
+        if (data.extensions && data.extensions.length > 0) {
+            content += `<p><strong>File Extensions:</strong> ${data.extensions.join(', ')}</p>`;
+        }
+
+        // Show related technologies
+        /*    const related = techRelationships[data.name];
+            if (related && related.length > 0) {
+              content += `<p><strong>Builds to:</strong> ${related.join(', ')}</p>`;
+            }*/
+
+        tooltip
+            .style('opacity', 1)
+            .html(content)
+            .style('left', (event.pageX + 10) + 'px')
+            .style('top', (event.pageY + 20) + 'px');
+    }
+
+    function hideTooltip() {
+        tooltip.style('opacity', 0);
+    }
+
+    // Control functions
+    function resetZoom() {
+        svg.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity);
+    }
+
+    function toggleLabels() {
+        config.showLabels = !config.showLabels;
+        mainLayer.selectAll('.technology-text, .ring-label, .cluster-label')
+            .style('opacity', config.showLabels ? 1 : 0);
+    }
+
+    // Event listeners
+    d3.select('#reset-zoom').on('click', resetZoom);
+    d3.select('#toggle-labels').on('click', toggleLabels);
+    d3.select('#clear-selection').on('click', clearSelection);
+
+    // Click outside to clear selection
+    svg.on('click', function (event) {
+        if (event.target === this) {
+            clearSelection();
+        }
+    });
+
+    // Window resize handler
+    window.addEventListener('resize', () => {
+        config.width = window.innerWidth;
+        config.height = window.innerHeight;
+        config.centerX = config.width / 2;
+        config.centerY = config.height / 2;
+
+        svg.attr('width', config.width).attr('height', config.height);
+    });
+
+    // Main render function
+    function renderSkillTree(skillTreeData) {
+        // Clear existing content
+        mainLayer.selectAll('*').remove();
+        connectionsLayer.selectAll('*').remove();
+        allTechnologies.clear();
+
+        // Process the data
+        const processedData = processSkillTreeData(skillTreeData);
+
+        // Render from outside-in so inner rings appear on top
+        renderRings(processedData.rings.slice().reverse());
+        renderCore(processedData.core);
+    }
+
+    // Technology relationships for path creation
+    const techRelationships = {
+        // Core to Build Tools
+        'package.json': ['HTML5', 'CSS3', 'JavaScript'],
+        'HTML5': ['Pug', 'Handlebars', 'EJS', 'Nunjucks'],
+        'CSS3': ['Sass', 'PostCSS'],
+        'JavaScript': ['Parcel', 'Vite', 'tsc', 'Deno', 'Bun', 'SvelteKit'],
+        'node:http': ['Express', 'Koa', 'Fastify', 'Hono'],
+        'node:fs': ['GatsbyJS', 'Astro', 'Next.js', 'Nuxt'],
+        'Browser APIs': ['React', 'Vue', 'Angular', 'Svelte'],
+
+        // Build Tools to Application Layer
+        // 'Pug': ['Astro'],
+        // 'Handlebars': ['11ty'],
+        // 'EJS': ['Express'],
+        // 'Sass': ['Flowbite'],
+        'PostCSS': ['Tailwind', 'Flowbite', 'ShadCN', 'Bootstrap'],
+        'Parcel': ['React', 'Vue', 'Svelte'],
+        'Vite': ['React', 'Vue', 'Svelte', 'Pug', 'Handlebars', 'Nunjucks'],
+        // 'TypeScript': ['React', 'Vue', 'Angular', 'Svelte', 'Next.js', 'Nuxt'],
+        'Deno': ['Hono'],
+        'Bun': ['Hono'],
+
+        // Application Layer connections (same level)
+        'React': ['Next.js'],
+        'Vue': ['Nuxt'],
+        'SvelteKit': ['Svelte'],
+        'Tailwind': ['Flowbite'],
+        'Express': ['Pug', 'Handlebars', 'EJS']
+    };
+
+    // Cleaned data with shorter names and proper structure
+    const webEngineeringSkillTree = {
+        metadata: {
+            title: "Web Engineering Mandala",
+            description: "RPG-style progression through web development complexity layers",
+            version: "1.0.0"
+        },
+
+        core: {
+            level: 0,
+            name: "Foundation",
+            description: "The absolute minimum - you can build anything starting here",
+            technologies: [{
+                name: "package.json",
+                description: "Node.js project manifest - defines scripts, dependencies, metadata",
+                capabilities: [
+                    "Define npm scripts for any task",
+                    "Manage dependencies with semantic versioning",
+                    "Execute tools via npx without global installation",
+                    "Configure project metadata and entry points"
+                ]
+            }]
+        },
+
+        rings: [
+            {
+                level: 1,
+                name: "Core Layer",
+                description: "The fundamental building blocks of the web",
+                sectors: [
+                    {
+                        name: "HTML",
+                        technologies: [
+                            {
+                                name: "HTML5",
+                                extensions: [".html"],
+                                description: "Modern semantic markup for accessible, SEO-friendly documents",
+                                capabilities: [
+                                    "Document structure with semantic meaning",
+                                    "Accessibility through proper element hierarchy",
+                                    "SEO optimization via structured content",
+                                    "Form validation and user input handling"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "CSS",
+                        technologies: [
+                            {
+                                name: "CSS3",
+                                extensions: [".css"],
+                                description: "Flexbox, Grid, and responsive design systems",
+                                capabilities: [
+                                    "Complex layouts with Flexbox and CSS Grid",
+                                    "Responsive design with media queries",
+                                    "Custom properties (CSS variables) for theming",
+                                    "Animations and transitions for user experience"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "JavaScript",
+                        technologies: [
+                            {
+                                name: "JavaScript",
+                                extensions: [".js", ".mjs", ".cjs"],
+                                description: "Contemporary JavaScript with latest language features",
+                                capabilities: [
+                                    "Async/await for non-blocking operations",
+                                    "Modules (ESM) for code organization",
+                                    "DOM manipulation and event handling",
+                                    "Fetch API for network requests"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            {
+                level: 2,
+                name: "Build Layer",
+                description: "Tools that process, optimize, and enhance core web technologies",
+                sectors: [
+                    {
+                        name: "HTML",
+                        clusters: [
+                            {
+                                name: "Template Engines",
+                                technologies: [
+                                    {
+                                        name: "Nunjucks",
+                                        extensions: [".nks"]
+                                    },
+                                    {
+                                        name: "Pug",
+                                        extensions: [".pug"],
+                                        description: "Clean, whitespace-sensitive templating",
+                                        capabilities: [
+                                            "Dynamic content generation from data",
+                                            "Reusable components and partials",
+                                            "Logic-less templates for security",
+                                            "Compile-time HTML optimization"
+                                        ]
+                                    },
+                                    {
+                                        name: "Handlebars",
+                                        extensions: [".hbs"],
+                                        description: "Logic-less templates with helpers",
+                                        capabilities: [
+                                            "Template inheritance and partials",
+                                            "Custom helper functions",
+                                            "Build-time HTML optimization",
+                                            "Server-side and client-side rendering"
+                                        ]
+                                    },
+                                    {
+                                        name: "EJS",
+                                        extensions: [".ejs"],
+                                        description: "Embedded JavaScript templating",
+                                        capabilities: [
+                                            "JavaScript expressions in templates",
+                                            "Include system for template composition",
+                                            "Fast compilation and rendering",
+                                            "Express.js integration"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "CSS",
+                        clusters: [
+                            {
+                                name: "Post Processors", technologies: [
+                                    {
+                                        name: "PostCSS",
+                                        description: "Post-processing CSS with JavaScript plugins",
+                                        capabilities: [
+                                            "Autoprefixer for vendor prefix management",
+                                            "CSS Modules for scoped styling",
+                                            "Future CSS syntax via polyfills",
+                                            "Custom transformations via plugins"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: "Pre Processors", technologies: [
+                                    {
+                                        name: "Sass",
+                                        extensions: [".scss", ".sass"],
+                                        description: "Industry standard CSS preprocessor",
+                                        capabilities: [
+                                            "Variables and functions for DRY code",
+                                            "Nested selectors for better organization",
+                                            "Mixins for reusable style patterns",
+                                            "Mathematical operations and color functions"
+                                        ]
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        name: "JavaScript",
+                        clusters: [
+                            {
+                                name: "Bundlers",
+                                technologies: [
+                                    {
+                                        name: "Parcel",
+                                        description: "Zero-configuration build tool",
+                                        capabilities: [
+                                            "Automatic dependency resolution",
+                                            "Built-in dev server with hot reload",
+                                            "Code splitting and lazy loading",
+                                            "Asset optimization without config"
+                                        ]
+                                    },
+                                    {
+                                        name: "Vite",
+                                        description: "Lightning-fast dev server with ESM",
+                                        capabilities: [
+                                            "Instant server start with native ESM",
+                                            "Hot Module Replacement (HMR)",
+                                            "Rollup-based production optimization",
+                                            "Framework-agnostic architecture"
+                                        ]
+                                    },
+                                    {
+                                        name: "SvelteKit",
+                                        description: "Svelte-powered full-stack framework",
+                                        capabilities: [
+                                            "File-based routing system",
+                                            "Server-side rendering with hydration",
+                                            "Zero-config TypeScript support",
+                                            "Adapter system for any deployment target"
+                                        ]
+                                    },
+                                    {
+                                        name: "tsc",
+                                        extensions: [".ts", ".tsx"],
+                                        description: "TypeScript Compiler",
+                                        capabilities: [
+                                            "Static type checking and IntelliSense",
+                                            "Modern JavaScript features compilation",
+                                            "Interface definitions for APIs",
+                                            "Enhanced refactoring and debugging"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: "Runtimes",
+                                technologies: [
+                                    {
+                                        name: "Deno",
+                                        description: "Secure TypeScript runtime",
+                                        capabilities: [
+                                            "Built-in TypeScript support without compilation",
+                                            "Secure by default with explicit permissions",
+                                            "Standard library with modern APIs",
+                                            "Built-in testing and formatting tools"
+                                        ]
+                                    },
+                                    {
+                                        name: "Bun",
+                                        description: "Fast all-in-one JavaScript runtime",
+                                        capabilities: [
+                                            "Extremely fast package installation",
+                                            "Built-in bundler and test runner",
+                                            "Node.js compatibility with performance gains",
+                                            "Native TypeScript execution"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            {
+                level: 3,
+                name: "Application Layer",
+                description: "Full-stack frameworks, production deployment, and specialized patterns",
+                sectors: [
+                    {
+                        name: "HTML",
+                        technologies: [
+                            {
+                                name: "Web-Components",
+                                extensions: [".js", ".ts"],
+                                description: "Reusable custom elements with encapsulated functionality",
+                                capabilities: [
+                                    "Shadow DOM for style encapsulation",
+                                    "Custom element registration and lifecycle",
+                                    "HTML templates and slots",
+                                    "Framework-agnostic component architecture"
+                                ]
+                            },
+                            {
+                                name: "WebAssembly",
+                                extensions: [".wasm"],
+                                description: "Binary instruction format for high-performance web applications",
+                                capabilities: [
+                                    "Near-native performance in browsers",
+                                    "Support for multiple programming languages",
+                                    "Secure sandboxed execution environment",
+                                    "Interoperability with JavaScript"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "CSS",
+                        technologies: [
+                            {
+                                name: "Tailwind",
+                                description: "Utility-first CSS framework",
+                                capabilities: [
+                                    "Rapid prototyping with utility classes",
+                                    "Consistent design system with design tokens",
+                                    "Automatic CSS purging for production",
+                                    "Component extraction patterns"
+                                ]
+                            },
+                            {
+                                name: "Bootstrap",
+                                description: "Popular CSS framework with pre-built components",
+                                capabilities: [
+                                    "Responsive grid system and utilities",
+                                    "Pre-styled UI components",
+                                    "JavaScript plugins for interactions",
+                                    "Customizable Sass variables and mixins"
+                                ]
+                            },
+                            {
+                                name: "ShadCN",
+                                description: "Re-usable components built with Radix UI and Tailwind",
+                                capabilities: [
+                                    "Copy-paste component architecture",
+                                    "Accessibility-first design patterns",
+                                    "Customizable design system tokens",
+                                    "TypeScript support with proper typing"
+                                ]
+                            },
+                            {
+                                name: "Flowbite",
+                                description: "Tailwind CSS component library",
+                                capabilities: [
+                                    "Pre-built components with Tailwind classes",
+                                    "Accessibility-first design patterns",
+                                    "Customizable design tokens system",
+                                    "Framework integrations available"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        name: "JavaScript",
+                        clusters: [
+                            {
+                                name: "ES6+",
+                                technologies: [
+                                    {
+                                        name: "Browser APIs",
+                                        description: "Native browser capabilities beyond basic DOM",
+                                        capabilities: [
+                                            "Geolocation, Local Storage, Service Workers",
+                                            "Progressive Web App features",
+                                            "WebGL for 3D graphics",
+                                            "Web Components for reusable elements"
+                                        ]
+                                    },
+                                    {
+                                        name: "node:http",
+                                        description: "Built-in Node.js HTTP server",
+                                        capabilities: [
+                                            "Server-side HTTP server without dependencies",
+                                            "Built-in TypeScript definitions"
+                                        ]
+                                    },
+                                    {
+                                        name: "node:fs",
+                                        description: "File system operations module",
+                                        capabilities: [
+                                            "Read/write files synchronously or asynchronously",
+                                            "Directory traversal and manipulation",
+                                            "File watching for development tools"
+                                        ]
+                                    },
+
+                                ]
+                            },
+                            {
+                                name: "Frontend",
+                                technologies: [
+                                    {
+                                        name: "React",
+                                        extensions: [".jsx", ".tsx"],
+                                        description: "Component-based UI library with virtual DOM",
+                                        capabilities: [
+                                            "Virtual DOM for efficient updates",
+                                            "Unidirectional data flow pattern",
+                                            "Rich ecosystem of libraries and tools",
+                                            "Concurrent features for performance"
+                                        ]
+                                    },
+                                    {
+                                        name: "Vue",
+                                        extensions: [".vue"],
+                                        description: "Progressive framework with template syntax",
+                                        capabilities: [
+                                            "Template-based syntax with optional JSX",
+                                            "Reactive data binding with Composition API",
+                                            "Component-based architecture",
+                                            "Gradual adoption strategy"
+                                        ]
+                                    },
+                                    {
+                                        name: "Angular",
+                                        extensions: [".ts", ".html"],
+                                        description: "Full-featured framework with TypeScript",
+                                        capabilities: [
+                                            "Dependency injection system",
+                                            "Two-way data binding with RxJS",
+                                            "CLI tooling for project scaffolding",
+                                            "Enterprise-ready architecture patterns"
+                                        ]
+                                    },
+                                    {
+                                        name: "Svelte",
+                                        extensions: [".svelte"],
+                                        description: "Compile-time framework with no runtime",
+                                        capabilities: [
+                                            "No runtime overhead with compile-time optimization",
+                                            "Built-in state management and reactivity",
+                                            "Smooth animations with built-in transitions",
+                                            "Small bundle sizes"
+                                        ]
+                                    }
+                                ]
+                            },
+
+                            {
+                                name: "Server Side Rendering",
+                                technologies: [
+                                    {
+                                        name: "Astro",
+                                        extensions: [".astro", ".md", ".mdx"],
+                                        description: "Multi-framework static site generator",
+                                        capabilities: [
+                                            "Build-time content generation with any framework",
+                                            "Component islands architecture for selective hydration",
+                                            "Framework-agnostic development approach",
+                                            "Automatic performance optimization"
+                                        ]
+                                    },
+                                    {
+                                        name: "GatsbyJS",
+                                        extensions: [".jsx", ".tsx", ".md", ".mdx"],
+                                        description: "Simple, flexible static site generator",
+                                        capabilities: [
+                                            "Multiple template languages support",
+                                            "Data-driven site generation from any source",
+                                            "Extensible plugin ecosystem",
+                                            "Zero-config deployment ready"
+                                        ]
+                                    },
+                                    /*                  {
+                                                        name: "11ty",
+                                                        extensions: [".md"],
+                                                        description: "Simple, flexible static site generator",
+                                                        capabilities: [
+                                                          "Multiple template languages support",
+                                                          "Data-driven site generation from any source",
+                                                          "Extensible plugin ecosystem",
+                                                          "Zero-config deployment ready"
+                                                        ]
+                                                      },*/
+                                    {
+                                        name: "Next.js",
+                                        description: "React-based full-stack framework",
+                                        capabilities: [
+                                            "Server-side rendering and static generation",
+                                            "API routes for backend functionality",
+                                            "Automatic code splitting and optimization",
+                                            "Built-in performance monitoring"
+                                        ]
+                                    },
+                                    {
+                                        name: "Nuxt",
+                                        description: "Vue.js-based full-stack framework",
+                                        capabilities: [
+                                            "Universal rendering with Vue.js",
+                                            "Auto-generated routing from file structure",
+                                            "Module ecosystem for functionality",
+                                            "Static site generation capabilities"
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                name: "Backend",
+                                technologies: [
+                                    {
+                                        name: "Express",
+                                        description: "Minimal web framework for Node.js",
+                                        capabilities: [
+                                            "Middleware-based request processing",
+                                            "Flexible routing system",
+                                            "Template engine integration",
+                                            "Large ecosystem of plugins"
+                                        ]
+                                    },
+                                    {
+                                        name: "Koa",
+                                        description: "Next-generation web framework by Express team",
+                                        capabilities: [
+                                            "Async/await by default",
+                                            "Context object for request/response",
+                                            "Lightweight core with middleware composition",
+                                            "Better error handling"
+                                        ]
+                                    },
+                                    {
+                                        name: "Fastify",
+                                        description: "Fast and low overhead web framework",
+                                        capabilities: [
+                                            "JSON schema validation built-in",
+                                            "High performance with minimal overhead",
+                                            "Plugin architecture for extensibility",
+                                            "TypeScript support out of the box"
+                                        ]
+                                    },
+                                    {
+                                        name: "Hono",
+                                        description: "Ultrafast web framework for edge environments",
+                                        capabilities: [
+                                            "Edge runtime compatibility (Cloudflare Workers, Deno)",
+                                            "TypeScript-first development experience",
+                                            "Minimal dependencies and small footprint",
+                                            "Express-like API design"
+                                        ]
+                                    }
+                                ]
+                            },
+                        ]
+                    }
+                ]
+            },
+            /*      {
+                    name: "test",
+                    level: 4,
+                    sectors: [
+                      {
+                        name: "HTML",
+                        technologies: [
+                          {
+                            name: "test"
+                          }
+                        ]
+                      }
+                    ]
+                  }*/
+        ]
+    };
+
+    const examples = [
+        // Add these to the examples array:
+
+        {
+            "id": "node-http-server",
+            "level": 3,
+            "name": "Pure Node.js HTTP Server",
+            "technologies": ["node:http", "node:fs"],
+            "package": {
+                "name": "conference-node",
+                "version": "1.0.0",
+                "type": "module",
+                "scripts": {
+                    "dev": "node --watch server.js",
+                    "start": "node server.js",
+                    "deploy": "pm2 start server.js --name conference-server"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "server.js",
+                "public/",
+                "  index.html",
+                "  speakers.html",
+                "  schedule.html",
+                "  style.css",
+                "  script.js",
+                "data/",
+                "  speakers.json",
+                "  schedule.json"
+            ]
+        },
+
+        {
+            "id": "astro-ssg",
+            "level": 3,
+            "name": "Astro Multi-Framework SSG",
+            "technologies": ["Astro", "React", "Vue", "Tailwind"],
+            "package": {
+                "name": "conference-astro",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "astro dev --port 8000",
+                    "build": "astro build",
+                    "preview": "astro preview --port 8000",
+                    "deploy": "npm run build && npx surge dist conference-astro.surge.sh",
+                    "deploy:vercel": "npm run build && npx vercel --prod"
+                },
+                "dependencies": {
+                    "astro": "^4.5.0",
+                    "@astrojs/react": "^3.1.0",
+                    "@astrojs/vue": "^4.0.0",
+                    "@astrojs/tailwind": "^5.1.0",
+                    "react": "^18.2.0",
+                    "vue": "^3.4.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "astro.config.mjs",
+                "tailwind.config.mjs",
+                "src/",
+                "  pages/",
+                "    index.astro",
+                "    speakers.astro",
+                "    schedule.astro",
+                "  layouts/",
+                "    Layout.astro",
+                "  components/",
+                "    Navigation.astro",
+                "    SpeakerCard.jsx",  // React island
+                "    ScheduleFilter.vue", // Vue island
+                "  content/",
+                "    speakers/",
+                "      john-doe.md",
+                "      jane-smith.md",
+                "  data/",
+                "    config.json",
+                "  styles/",
+                "    global.css",
+                "dist/",
+                "  (generated)"
+            ]
+        },
+
+        {
+            "id": "vue-spa",
+            "level": 3,
+            "name": "Vue 3 SPA",
+            "technologies": ["Vue", "Vite", "Tailwind"],
+            "package": {
+                "name": "conference-vue",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "vite --port 8000",
+                    "build": "vite build",
+                    "preview": "vite preview --port 8000",
+                    "deploy": "npm run build && npx surge dist conference-vue.surge.sh"
+                },
+                "dependencies": {
+                    "vue": "^3.4.0",
+                    "vue-router": "^4.3.0"
+                },
+                "devDependencies": {
+                    "vite": "^5.2.0",
+                    "@vitejs/plugin-vue": "^5.0.0",
+                    "tailwindcss": "^3.4.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "vite.config.js",
+                "index.html",
+                "src/",
+                "  main.js",
+                "  App.vue",
+                "  router/",
+                "    index.js",
+                "  views/",
+                "    Home.vue",
+                "    Speakers.vue",
+                "    Schedule.vue",
+                "  components/",
+                "    Navigation.vue",
+                "    SpeakerCard.vue",
+                "    ScheduleItem.vue",
+                "  composables/",
+                "    useLocalStorage.js",
+                "    useAPI.js",
+                "  data/",
+                "    speakers.json",
+                "  styles/",
+                "    main.css"
+            ]
+        },
+
+        {
+            "id": "nuxt-fullstack",
+            "level": 3,
+            "name": "Nuxt Full-Stack",
+            "technologies": ["Nuxt", "Vue", "Tailwind"],
+            "package": {
+                "name": "conference-nuxt",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "nuxt dev --port 8000",
+                    "build": "nuxt build",
+                    "preview": "nuxt preview --port 8000",
+                    "generate": "nuxt generate",
+                    "deploy:static": "npm run generate && npx surge .output/public conference-nuxt.surge.sh",
+                    "deploy:vercel": "npx vercel --prod"
+                },
+                "dependencies": {
+                    "nuxt": "^3.11.0",
+                    "@nuxtjs/tailwindcss": "^6.11.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "nuxt.config.ts",
+                "tailwind.config.js",
+                "app.vue",
+                "pages/",
+                "  index.vue",
+                "  speakers/",
+                "    index.vue",
+                "    [slug].vue",
+                "  schedule.vue",
+                "layouts/",
+                "  default.vue",
+                "components/",
+                "  Navigation.vue",
+                "  SpeakerCard.vue",
+                "server/",
+                "  api/",
+                "    speakers.get.ts",
+                "    schedule.get.ts",
+                "content/",
+                "  speakers/",
+                "    john-doe.md",
+                "public/",
+                "  favicon.ico",
+                ".output/",
+                "  (generated)"
+            ]
+        },
+
+        {
+            "id": "svelte-spa",
+            "level": 3,
+            "name": "Svelte SPA",
+            "technologies": ["Svelte", "Vite", "Tailwind"],
+            "package": {
+                "name": "conference-svelte",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "vite dev --port 8000",
+                    "build": "vite build",
+                    "preview": "vite preview --port 8000",
+                    "deploy": "npm run build && npx surge dist conference-svelte.surge.sh"
+                },
+                "dependencies": {
+                    "svelte": "^4.2.0",
+                    "svelte-spa-router": "^4.0.0"
+                },
+                "devDependencies": {
+                    "vite": "^5.2.0",
+                    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+                    "tailwindcss": "^3.4.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "vite.config.js",
+                "svelte.config.js",
+                "index.html",
+                "src/",
+                "  main.js",
+                "  App.svelte",
+                "  routes/",
+                "    Home.svelte",
+                "    Speakers.svelte",
+                "    Schedule.svelte",
+                "  components/",
+                "    Navigation.svelte",
+                "    SpeakerCard.svelte",
+                "  stores/",
+                "    speakers.js",
+                "    schedule.js",
+                "  lib/",
+                "    utils.js",
+                "  app.css"
+            ]
+        },
+
+        {
+            "id": "shadcn-react",
+            "level": 3,
+            "name": "React + ShadCN Components",
+            "technologies": ["React", "ShadCN", "Tailwind", "Vite"],
+            "package": {
+                "name": "conference-shadcn",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "vite --port 8000",
+                    "build": "vite build",
+                    "preview": "vite preview --port 8000",
+                    "deploy": "npm run build && npx surge dist conference-shadcn.surge.sh",
+                    "ui:add": "npx shadcn-ui@latest add"
+                },
+                "dependencies": {
+                    "react": "^18.2.0",
+                    "react-dom": "^18.2.0",
+                    "react-router-dom": "^6.22.0",
+                    "@radix-ui/react-slot": "^1.0.2",
+                    "class-variance-authority": "^0.7.0",
+                    "clsx": "^2.1.0",
+                    "tailwind-merge": "^2.2.0",
+                    "lucide-react": "^0.363.0"
+                },
+                "devDependencies": {
+                    "vite": "^5.2.0",
+                    "@vitejs/plugin-react": "^4.2.0",
+                    "tailwindcss": "^3.4.0",
+                    "tailwindcss-animate": "^1.0.7"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "vite.config.ts",
+                "tailwind.config.js",
+                "components.json",
+                "index.html",
+                "src/",
+                "  main.tsx",
+                "  App.tsx",
+                "  components/",
+                "    ui/",
+                "      button.tsx",
+                "      card.tsx",
+                "      badge.tsx",
+                "      dialog.tsx",
+                "    Navigation.tsx",
+                "    SpeakerCard.tsx",
+                "    ScheduleDialog.tsx",
+                "  pages/",
+                "    Home.tsx",
+                "    Speakers.tsx",
+                "    Schedule.tsx",
+                "  lib/",
+                "    utils.ts",
+                "  styles/",
+                "    globals.css"
+            ]
+        },
+        {
+            "id": "foundation",
+            "level": 0,
+            "name": "Foundation Only",
+            "technologies": ["package.json"],
+            "package": {
+                "name": "conference-landing",
+                "version": "1.0.0",
+                "scripts": {
+                    "start": "python3 -m http.server 8000",
+                    "deploy": "rsync -av ./ user@server:/var/www/"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "index.html",
+                "style.css",
+                "script.js"
+            ]
+        },
+        {
+            "id": "core-vanilla",
+            "level": 1,
+            "name": "Core Web Technologies",
+            "technologies": ["HTML5", "CSS3", "JavaScript"],
+            "package": {
+                "name": "conference-vanilla",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "npx serve . -p 8000",
+                    "build": "echo 'No build step needed'",
+                    "deploy": "npx surge . conference-vanilla.surge.sh"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "index.html",
+                "speakers.html",
+                "schedule.html",
+                "css/",
+                "  main.css",
+                "  layout.css",
+                "js/",
+                "  app.js",
+                "  utils.js",
+                "assets/",
+                "  logo.svg",
+                "  hero.jpg"
+            ]
+        },
+        {
+            "id": "build-minimal",
+            "level": 2,
+            "name": "Minimal Build Tools",
+            "technologies": ["Parcel", "HTML5", "CSS3", "JavaScript"],
+            "package": {
+                "name": "conference-parcel",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "parcel src/index.html --port 8000",
+                    "build": "parcel build src/index.html --dist-dir dist --public-url ./",
+                    "preview": "npx serve dist -p 8000"
+                },
+                "devDependencies": {
+                    "parcel": "^2.12.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "src/",
+                "  index.html",
+                "  speakers.html",
+                "  schedule.html",
+                "  styles/",
+                "    main.css",
+                "    components.css",
+                "  js/",
+                "    app.js",
+                "    modules/",
+                "      calendar.js",
+                "      speakers.js",
+                "  assets/",
+                "    images/",
+                "      logo.svg",
+                "dist/",
+                "  (generated)"
+            ]
+        },
+        {
+            "id": "template-processing",
+            "level": 2,
+            "name": "Template + CSS Processing",
+            "technologies": ["Vite", "Pug", "Tailwind", "PostCSS"],
+            "package": {
+                "name": "conference-templates",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "vite --port 8000",
+                    "build": "vite build",
+                    "preview": "npx serve dist -p 8000"
+                },
+                "devDependencies": {
+                    "vite": "^5.2.0",
+                    "pug": "^3.0.2",
+                    "tailwindcss": "^3.4.0",
+                    "autoprefixer": "^10.4.0",
+                    "postcss": "^8.4.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "vite.config.js",
+                "tailwind.config.js",
+                "postcss.config.js",
+                "src/",
+                "  index.pug",
+                "  speakers.pug",
+                "  schedule.pug",
+                "  templates/",
+                "    layout.pug",
+                "    components/",
+                "      speaker-card.pug",
+                "      nav.pug",
+                "  styles/",
+                "    main.css",
+                "    components.css",
+                "  js/",
+                "    app.js",
+                "    modules/",
+                "      calendar.js",
+                "  data/",
+                "    speakers.json",
+                "    schedule.json",
+                "dist/",
+                "  (generated)"
+            ]
+        },
+        {
+            "id": "react-spa",
+            "level": 3,
+            "name": "React SPA",
+            "technologies": ["React", "Vite", "Tailwind", "Browser APIs"],
+            "package": {
+                "name": "conference-react",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "vite --port 8000",
+                    "build": "vite build",
+                    "preview": "npx serve dist -p 8000"
+                },
+                "dependencies": {
+                    "react": "^18.2.0",
+                    "react-dom": "^18.2.0"
+                },
+                "devDependencies": {
+                    "vite": "^5.2.0",
+                    "@vitejs/plugin-react": "^4.2.0",
+                    "tailwindcss": "^3.4.0",
+                    "autoprefixer": "^10.4.0",
+                    "postcss": "^8.4.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "vite.config.js",
+                "tailwind.config.js",
+                "index.html",
+                "src/",
+                "  main.jsx",
+                "  App.jsx",
+                "  components/",
+                "    Layout.jsx",
+                "    Navigation.jsx",
+                "    SpeakerCard.jsx",
+                "    ScheduleItem.jsx",
+                "  pages/",
+                "    Home.jsx",
+                "    Speakers.jsx",
+                "    Schedule.jsx",
+                "  hooks/",
+                "    useLocalStorage.js",
+                "    useAPI.js",
+                "  data/",
+                "    speakers.json",
+                "    schedule.json",
+                "  styles/",
+                "    index.css",
+                "dist/",
+                "  (generated)"
+            ]
+        },
+        {
+            "id": "fullstack-ssr",
+            "level": 3,
+            "name": "Full-Stack SSR",
+            "technologies": ["Next.js", "React"],
+            "package": {
+                "name": "conference-nextjs",
+                "version": "1.0.0",
+                "scripts": {
+                    "dev": "next dev -p 8000",
+                    "build": "next build",
+                    "start": "next start",
+                    "export": "next build && next export"
+                },
+                "dependencies": {
+                    "next": "^14.1.0",
+                    "react": "^18.2.0",
+                    "react-dom": "^18.2.0"
+                },
+                "devDependencies": {
+                    "@types/node": "^20.0.0",
+                    "@types/react": "^18.0.0",
+                    "typescript": "^5.0.0",
+                    "tailwindcss": "^3.4.0"
+                }
+            },
+            "fileTree": [
+                "package.json",
+                "next.config.js",
+                "tailwind.config.js",
+                "tsconfig.json",
+                "src/",
+                "  app/",
+                "    layout.tsx",
+                "    page.tsx",
+                "    speakers/",
+                "      page.tsx",
+                "    schedule/",
+                "      page.tsx",
+                "    api/",
+                "      speakers/",
+                "        route.ts",
+                "      schedule/",
+                "        route.ts",
+                "  components/",
+                "    Navigation.tsx",
+                "    SpeakerCard.tsx",
+                "    ScheduleItem.tsx",
+                "  lib/",
+                "    data.ts",
+                "    utils.ts",
+                "  styles/",
+                "    globals.css",
+                "  data/",
+                "    speakers.json",
+                "    schedule.json",
+                ".next/",
+                "  (generated)",
+                "out/",
+                "  (generated for export)"
+            ]
+        }
+    ];
+
+    // Initialize the visualization
+    renderSkillTree(webEngineeringSkillTree);
 </script>
 </body>
 </html>
